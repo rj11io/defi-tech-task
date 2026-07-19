@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/rj11io/defi-tech-task/compare/v1.0.0...v1.0.1) (2026-07-19)
+
+
+### Bug Fixes
+
+* fix initial state ([35095b7](https://github.com/rj11io/defi-tech-task/commit/35095b7c55a719d5d3d6b4fbf45835590fcb0f74))
+
 # 1.0.0 (2026-07-19)
 
 
