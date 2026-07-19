@@ -1,3 +1,11 @@
+## [1.0.2](https://github.com/rj11io/defi-tech-task/compare/v1.0.1...v1.0.2) (2026-07-19)
+
+
+### Bug Fixes
+
+* fixed db seed connections ([3d9af64](https://github.com/rj11io/defi-tech-task/commit/3d9af642bffd5426065aa49cc7985ae92fdbc103))
+* fixed testing suite ([7436195](https://github.com/rj11io/defi-tech-task/commit/74361957d7f26101e8be895006de5407e212e9ae))
+
 ## [1.0.1](https://github.com/rj11io/defi-tech-task/compare/v1.0.0...v1.0.1) (2026-07-19)
 
 
