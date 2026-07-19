@@ -1,66 +1,48 @@
-const passport = require('passport');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const Rt = require('../models/rt');
 const {
   SendData,
   ServerError,
   NotFound,
-  WrongEmail,
-  WrongPassword,
-  InactiveAccount,
   EmailAlreadyExists,
   DeletedAccount,
   Unauthorized,
-  BadRequest,
-  AlreadyExists
+  WrongEmail,
+  WrongPassword,
+  InactiveAccount,
+  MissingRefreshToken,
+  ExpiredRefreshToken,
+  UnauthorizedRefreshToken
 } = require('../helpers/response');
 const { generateToken, clearTokens } = require('../helpers/auth');
-const { registerEmail, changePasswordEmail, inviteEmail } = require('../emails');
 const { langs, defaultLang } = require('../config');
-const { canChangePassword } = require('../rbac/users');
-const { canUpdateCompany } = require('../rbac/companies');
 
-exports.login = async (req, res, next) => {
+const dbUser = email => User.findOne({ email }).setOptions({ internalGet: true });
+const decodeChangeToken = token => jwt.verify(Buffer.from(token, 'base64').toString(), process.env.JWT_SECRET || 'secret');
+const usedChangeTokens = new Set();
+
+exports.login = async ({ body: { email, password } }, res, next) => {
   try {
-    const { email, password } = req.body;
-
-    const user = await User.findOne({ email }).setOptions({ internalGet: true });
+    const user = (await dbUser(email)) || (await User.findOne({ email, deleted: true }).setOptions({ internalGet: true }));
     if (!user) return next(WrongEmail());
     if (user.deleted) return next(DeletedAccount());
     if (!user.active) return next(InactiveAccount());
-
-    const validPassword = await new Promise((resolve, reject) => {
-      user.comparePassword(password, (err, match) => (err ? reject(err) : resolve(match)));
-    });
-    if (!validPassword) return next(WrongPassword());
-
+    const valid = await new Promise((resolve, reject) => user.comparePassword(password, (err, ok) => (err ? reject(err) : resolve(ok))));
+    if (!valid) return next(WrongPassword());
     await generateToken(res, user);
     return next(SendData(user.response('cp')));
-  } catch (e) {
-    return next(ServerError(e));
+  } catch (err) {
+    return next(ServerError(err));
   }
 };
 
-// Keep all other functions as they are, but make them work with mock data
-exports.check = async (req, res, next) => {
-  try {
-    return next(SendData(req.user.response('profile')));
-  } catch (err) {
-    return next(Unauthorized(err));
-  }
-};
+exports.check = async (req, res, next) => next(SendData(req.user.response(['_id', 'fullname', 'lang', 'company', 'createdAt'])));
 
 exports.checkIfEmailExists = async ({ params: { email } }, res, next) => {
   try {
-    // Mock response - always return that email exists for test account
-    if (email === 'test@meblabs.com') {
-      const response = { 
-        message: 'Email exists!', 
-        id: '1',
-        email: email
-      };
-      return next(SendData(response));
-    }
-    return next(NotFound());
+    const user = await dbUser(email);
+    return !user || user.deleted ? next(NotFound()) : next(SendData({ message: 'Email exists!', id: user.id, email: user.email }));
   } catch (err) {
     return next(ServerError(err));
   }
@@ -68,70 +50,34 @@ exports.checkIfEmailExists = async ({ params: { email } }, res, next) => {
 
 exports.resendActivationEmail = async ({ body: { email } }, res, next) => {
   try {
-    // Mock - always succeed
-    console.log(`[MOCK] Resend activation email to: ${email}`);
-    return next(SendData());
-  } catch (e) {
-    return next(ServerError(e));
+    const user = await dbUser(email);
+    return user && !user.deleted ? next(SendData()) : next(NotFound());
+  } catch (err) {
+    return next(ServerError(err));
   }
 };
 
 exports.register = async (req, res, next) => {
   try {
-    if (req.body.lang && !langs.includes(req.body.lang)) {
-      req.body.lang = defaultLang;
-    }
-    
-    // Mock registration - always succeed
-    const mockUser = {
-      _id: '2',
-      email: req.body.email,
-      name: req.body.name || 'New User',
-      lastname: req.body.lastname || '',
-      fullname: `${req.body.name || 'New'} ${req.body.lastname || 'User'}`,
-      role: 'user',
-      lang: req.body.lang || 'en',
-      phone: req.body.phone || '',
-      active: true,
-      deleted: false,
-      response: function() {
-        return {
-          id: this._id,
-          email: this.email,
-          name: this.name,
-          lastname: this.lastname,
-          fullname: this.fullname,
-          role: this.role,
-          lang: this.lang,
-          phone: this.phone
-        };
-      }
-    };
-    
-    await generateToken(res, mockUser);
-    
-    return next(SendData(mockUser.response()));
-  } catch (e) {
-    return next(ServerError(e));
+    const existing = (await dbUser(req.body.email)) || (await User.findOne({ email: req.body.email, deleted: true }).setOptions({ internalGet: true }));
+    if (existing?.deleted) return next(DeletedAccount());
+    if (existing) return next(EmailAlreadyExists());
+    const lang = langs.includes(req.body.lang) ? req.body.lang : defaultLang;
+    const user = await new User({ ...req.body, lang: lang.toUpperCase(), active: true }).save();
+    await generateToken(res, user);
+    return next(SendData(user.response('cp')));
+  } catch (err) {
+    return next(ServerError(err));
   }
 };
 
 exports.invite = async ({ body }, { locals: { user } }, next) => {
   try {
-    // Mock invite - always succeed
-    const newUser = {
-      _id: '3',
-      email: body.email,
-      name: body.name || 'Invited User',
-      response: function() {
-        return {
-          id: this._id,
-          email: this.email,
-          name: this.name
-        };
-      }
-    };
-    return next(SendData(newUser.response()));
+    const existing = await dbUser(body.email);
+    if (existing?.deleted) return next(DeletedAccount());
+    if (existing) return next(EmailAlreadyExists());
+    const newUser = await new User({ ...body, active: false, company: user.company, password: Math.random().toString(36).slice(-12) }).save();
+    return next(SendData(newUser.response('cp')));
   } catch (err) {
     return next(ServerError(err));
   }
@@ -139,35 +85,29 @@ exports.invite = async ({ body }, { locals: { user } }, next) => {
 
 exports.refreshToken = async (req, res, next) => {
   try {
-    // Mock refresh token
-    const mockUser = {
-      _id: '1',
-      email: 'test@meblabs.com',
-      name: 'Test User',
-      response: function() {
-        return {
-          id: this._id,
-          email: this.email,
-          name: this.name
-        };
-      }
-    };
-    await generateToken(res, mockUser);
-    return next(SendData(mockUser.response()));
-  } catch (e) {
-    return next(ServerError(e));
+    await generateToken(res, res.locals.user);
+    return next(SendData(res.locals.user.response('cp')));
+  } catch (err) {
+    return next(ServerError(err));
   }
 };
 
 exports.logout = async (req, res, next) => {
-  clearTokens(res);
-  return next(SendData({ message: 'Logout succesfully!' }));
+  try {
+    await Rt.deleteMany({ user: req.user._id });
+    clearTokens(res);
+    return next(SendData({ message: 'Logout succesfully!' }));
+  } catch (err) {
+    return next(ServerError(err));
+  }
 };
 
 exports.forgotPassword = async ({ body: { email } }, res, next) => {
   try {
-    // Mock - always succeed
-    console.log(`[MOCK] Forgot password for: ${email}`);
+    const user = await dbUser(email);
+    if (!user || user.deleted) return next(NotFound());
+    user.authReset = new Date();
+    await user.save();
     return next(SendData());
   } catch (err) {
     return next(ServerError(err));
@@ -176,30 +116,28 @@ exports.forgotPassword = async ({ body: { email } }, res, next) => {
 
 exports.restoreUser = async ({ body: { email } }, res, next) => {
   try {
-    // Mock - always succeed
-    console.log(`[MOCK] Restore user: ${email}`);
+    const user = await User.findOne({ email, deleted: true }).setOptions({ internalGet: true });
+    if (!user || !user.deleted) return next(NotFound());
+    await user.restore();
     return next(SendData());
   } catch (err) {
     return next(ServerError(err));
   }
 };
 
-exports.changePassword = async ({ params: { email }, body: { password } }, res, next) => {
+exports.changePassword = async ({ params: { email, token }, body: { password } }, res, next) => {
   try {
-    // Mock - always succeed
-    console.log(`[MOCK] Change password for: ${email}`);
-    res.clearCookie('accessToken', {
-      httpOnly: true,
-      sameSite: 'strict',
-      path: '/'
-    });
-    res.clearCookie('refreshToken', {
-      httpOnly: true,
-      sameSite: 'strict',
-      path: '/'
-    });
+    if (usedChangeTokens.has(token)) return next(Unauthorized());
+    const decoded = decodeChangeToken(token);
+    if (decoded.email !== email) return next(Unauthorized());
+    const user = await dbUser(email);
+    if (!user || user.deleted || (user.authReset && decoded.authReset !== user.authReset.toISOString())) return next(Unauthorized());
+    user.password = password;
+    user.authReset = null;
+    await user.save();
+    usedChangeTokens.add(token);
     return next(SendData({ message: 'Password changed successfully' }));
   } catch (err) {
-    return next(ServerError(err));
+    return next(Unauthorized());
   }
 };

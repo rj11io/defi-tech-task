@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const Rt = require('../models/rt');
 
 const secret = () => process.env.JWT_SECRET || 'secret';
 
@@ -48,7 +49,7 @@ const generateToken = async (res, user) => {
       email: userEmail,
       role: userRole
     },
-    secret(),
+    process.env.RT_SECRET || secret(),
     { expiresIn: '7d' }
   );
   
@@ -68,6 +69,13 @@ const generateToken = async (res, user) => {
   res.cookie('logged', true, {
     maxAge: 24 * 60 * 60 * 1000,
     sameSite: 'lax'
+  });
+
+  await Rt.deleteMany({ user: userId });
+  await Rt.create({
+    token: refreshToken,
+    user: userId,
+    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
   });
   
   return { accessToken, refreshToken };
