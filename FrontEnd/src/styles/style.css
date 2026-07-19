@@ -8,3 +8,19 @@
 @import 'core/ant.css';
 @import 'core/layout.css';
 @import 'app.css';
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #f4f7fb;
+}
+
+.ant-layout,
+.ant-layout-content {
+  min-width: 0;
+}

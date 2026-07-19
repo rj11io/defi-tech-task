@@ -2,7 +2,7 @@ import { useState, createContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome } from '@fortawesome/free-solid-svg-icons';
+import { faWallet } from '@fortawesome/free-solid-svg-icons';
 
 import useLocalStorage from '../hooks/core/useLocalStorage';
 
@@ -12,9 +12,7 @@ import useOnResize from '../hooks/core/useOnResize';
 const AppContext = createContext({});
 export default AppContext;
 
-const MacroMenu = {
-  Home: 1
-};
+const MacroMenu = { Home: 1 };
 
 export const AppProvider = props => {
   const { t } = useTranslation();
@@ -33,7 +31,7 @@ export const AppProvider = props => {
       {
         label: <Link to="/">{t('common.home')}</Link>,
         key: 'home',
-        icon: <FontAwesomeIcon icon={faHome} />,
+        icon: <FontAwesomeIcon icon={faWallet} />,
         authorizedRoles: ['admin', 'designer', 'manufacturer', 'owner']
       }
     ]
