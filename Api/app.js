@@ -1,3 +1,4 @@
+/* eslint-disable global-require, import/no-dynamic-require */
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
@@ -22,18 +23,30 @@ const app = express();
 
 const server = createServer(app);
 
+app.disable('x-powered-by');
+app.use((req, res, next) => {
+  res.set({
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'Referrer-Policy': 'no-referrer',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()'
+  });
+  next();
+});
+
 app.use(
   cors({
     credentials: true,
     origin: process.env.CORS_ORIGIN,
-    allowedHeaders: ['content-type'],
+    allowedHeaders: ['content-type', 'authorization'],
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     exposedHeaders: ['x-total-count', 'x-next-key']
   })
 );
 
-if (process.env.LIMITER === '1') app.use(limiter());
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+if (process.env.LIMITER !== '0') app.use(limiter());
+app.use(express.json({ limit: '100kb' }));
+app.use(express.urlencoded({ extended: false, limit: '100kb' }));
 app.use(cookieParser());
 app.use(trimmer());
 app.use(tswagger());

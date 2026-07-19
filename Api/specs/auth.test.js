@@ -6,10 +6,15 @@ const app = require('../app');
 const db = require('../db/connect-test');
 const User = require('../models/user');
 const Rt = require('../models/rt');
+const { changePasswordEmail } = require('../emails');
 
 let agent;
 
 jest.mock('../helpers/secrets.js');
+jest.mock('../emails', () => ({
+  changePasswordEmail: jest.fn(),
+  inviteEmail: jest.fn()
+}));
 
 const userInfo = (active = 1, deleted = 0) => {
   const info = {
@@ -25,6 +30,8 @@ const userInfo = (active = 1, deleted = 0) => {
 };
 
 const seedUser = async (active = true, deleted = false) => await new User(userInfo(active, deleted)).save();
+const responseCookie = (response, name) =>
+  response.headers['set-cookie'].find(cookie => cookie.startsWith(name)).split(';')[0];
 
 const newUser = {
   email: 'new@meblabs.com',
@@ -150,7 +157,7 @@ describe('GET /auth/check', () => {
       .then(res => {
         expect(res.headers['set-cookie']).toEqual(expect.arrayContaining([expect.any(String), expect.any(String)]));
         expect(res.body.fullname).toBe('John Doe');
-        const token = res.headers['set-cookie'].find(e => e.startsWith('accessToken'));
+        const token = responseCookie(res, 'accessToken');
 
         return agent.get('/auth/check').set('Cookie', token).expect(200);
       })
@@ -256,7 +263,7 @@ describe('POST /auth/register', () => {
         expect(res.headers['set-cookie']).toEqual(expect.arrayContaining([expect.any(String), expect.any(String)]));
         expect(res.body).toEqual(expect.objectContaining({ lang: 'EN' }));
 
-        const token = res.headers['set-cookie'].find(e => e.startsWith('accessToken'));
+        const token = responseCookie(res, 'accessToken');
 
         return agent.get('/auth/check').set('Cookie', token).expect(200);
       });
@@ -373,14 +380,14 @@ describe('GET /auth/rt', () => {
         expect(res.headers['set-cookie']).toEqual(expect.arrayContaining([expect.any(String), expect.any(String)]));
         expect(res.body).toEqual(expect.objectContaining({ fullname: 'John Doe' }));
 
-        const token = res.headers['set-cookie'].find(e => e.startsWith('refreshToken'));
+        const token = responseCookie(res, 'refreshToken');
         return agent.get('/auth/rt').set('Cookie', token).expect(200);
       })
       .then(res => {
         expect(res.headers['set-cookie']).toEqual(expect.arrayContaining([expect.any(String), expect.any(String)]));
         expect(res.body).toEqual(expect.objectContaining({ fullname: 'John Doe' }));
 
-        const token = res.headers['set-cookie'].find(e => e.startsWith('accessToken'));
+        const token = responseCookie(res, 'accessToken');
 
         return agent.get('/auth/check').set('Cookie', token).expect(200);
       })
@@ -425,7 +432,7 @@ describe('GET /auth/rt', () => {
       .then(res => {
         expect(res.headers['set-cookie']).toEqual(expect.arrayContaining([expect.any(String), expect.any(String)]));
         expect(res.body).toEqual(expect.objectContaining({ fullname: 'John Doe' }));
-        token = res.headers['set-cookie'].find(e => e.startsWith('refreshToken'));
+        token = responseCookie(res, 'refreshToken');
       });
 
     const refreshUser = await Rt.find({ user: user._id });
@@ -456,7 +463,7 @@ describe('GET /auth/logout', () => {
       .then(async res => {
         expect(res.headers['set-cookie']).toEqual(expect.arrayContaining([expect.any(String), expect.any(String)]));
         expect(res.body).toEqual(expect.objectContaining({ fullname: 'John Doe' }));
-        const refreshToken = res.headers['set-cookie'].find(e => e.startsWith('refreshToken'));
+        const refreshToken = responseCookie(res, 'refreshToken');
 
         const refreshUser = await User.findById(user._id).lean();
         expect(refreshUser.authReset).not.toBeDefined();
@@ -479,7 +486,12 @@ describe('GET /auth/logout', () => {
 
 describe('PATCH /auth/changePassword/:email/:token', () => {
   test('Change password successfully', async () => {
-    const user = await new User({ email: 'test@user.com', password: 'testtest', active: true }).save();
+    const user = await new User({
+      email: 'test@user.com',
+      password: 'testtest',
+      active: true,
+      authReset: new Date()
+    }).save();
     const { token } = genereteChangePasswordToken(user);
 
     return agent
@@ -495,7 +507,8 @@ describe('PATCH /auth/changePassword/:email/:token', () => {
   test('Change password of non existing user', async () => {
     const user = await new User({
       email: 'test@user.meblabs.com',
-      password: 'testtest'
+      password: 'testtest',
+      authReset: new Date()
     }).save();
     await user.softDelete();
 
@@ -536,6 +549,7 @@ describe('PATCH /auth/changePassword/:email/:token', () => {
 
   test('Change password user with authReset', async () => {
     const user = await new User({ email: 'test@user.meblabs.com', password: 'testtest', authReset: new Date() }).save();
+    await Rt.create({ token: 'existing-session', user: user._id, expires: dayjs().add(1, 'day').toDate() });
     const { token } = genereteChangePasswordToken(user);
     return agent
       .patch(`/auth/changePassword/${user.email}/${btoa(token)}`)
@@ -544,6 +558,10 @@ describe('PATCH /auth/changePassword/:email/:token', () => {
       .then(() => User.findById(user.id))
       .then(data => {
         expect(data.authReset).toBe(null);
+        return Rt.countDocuments({ user: user._id });
+      })
+      .then(activeSessions => {
+        expect(activeSessions).toBe(0);
       });
   });
 
@@ -569,7 +587,12 @@ describe('PATCH /auth/changePassword/:email/:token', () => {
   });
 
   test('Change password with used token', async () => {
-    const user = await new User({ email: 'test@user.com', password: 'testtest', active: true }).save();
+    const user = await new User({
+      email: 'test@user.com',
+      password: 'testtest',
+      active: true,
+      authReset: new Date()
+    }).save();
     const { token } = genereteChangePasswordToken(user);
 
     return agent
@@ -591,14 +614,36 @@ describe('POST /auth/forgotPassword', () => {
   test('Send recover email correctly', async () => {
     await seedUser();
 
-    return agent.post('/auth/forgotPassword').send({ email: userInfo().email }).expect(200);
+    return agent
+      .post('/auth/forgotPassword')
+      .send({ email: userInfo().email })
+      .expect(200)
+      .then(async () => {
+        const user = await User.findOne({ email: userInfo().email });
+        expect(user.authReset).toBeInstanceOf(Date);
+        expect(changePasswordEmail).toHaveBeenCalledWith(expect.objectContaining({ email: userInfo().email }));
+      });
   });
 
-  test('The user is deleted', async () => {
+  test('does not reveal whether the user is deleted', async () => {
     await seedUser(false, true);
 
-    return agent.post('/auth/forgotPassword').send({ email: userInfo().email }).expect(404);
+    return agent
+      .post('/auth/forgotPassword')
+      .send({ email: userInfo().email })
+      .expect(200)
+      .then(() => expect(changePasswordEmail).not.toHaveBeenCalled());
   });
+
+  test('does not reveal whether the user exists', () =>
+    agent
+      .post('/auth/forgotPassword')
+      .send({ email: 'missing@example.com' })
+      .expect(200)
+      .then(() => expect(changePasswordEmail).not.toHaveBeenCalled()));
+
+  test('validates the recovery email', () =>
+    agent.post('/auth/forgotPassword').send({ email: 'not-an-email' }).expect(400));
 });
 
 describe('POST /restoreUser', () => {

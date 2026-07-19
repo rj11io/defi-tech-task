@@ -3,7 +3,11 @@ const { sprintf } = require('sprintf-js');
 const { genereteChangePasswordToken } = require('../helpers/auth');
 const { send, getEmailText } = require('./core');
 
-const { WEBSITE_URL, NAME } = process.env;
+const { NAME } = process.env;
+const websiteUrl = process.env.WEBSITE_URL || process.env.CORS_ORIGIN || 'http://localhost';
+
+const changePasswordLink = (user, token) =>
+  `${websiteUrl}/changePassword/${encodeURIComponent(user.email)}/${Buffer.from(token).toString('base64url')}`;
 
 module.exports.registerEmail = async (to, lang, name) => {
   const locale = getEmailText(lang, 'register');
@@ -18,7 +22,7 @@ module.exports.registerEmail = async (to, lang, name) => {
 module.exports.changePasswordEmail = async (user, restore = false) => {
   const locale = getEmailText(user.lang, restore ? 'restoreUser' : 'changePassword');
   const { token } = genereteChangePasswordToken(user);
-  const link = `${WEBSITE_URL}/changePassword/${user.email}/${btoa(token)}`;
+  const link = changePasswordLink(user, token);
 
   return send({
     to: [user.email],
@@ -30,8 +34,8 @@ module.exports.changePasswordEmail = async (user, restore = false) => {
 module.exports.inviteEmail = async user => {
   const locale = getEmailText(user.lang, 'invite');
 
-  const { token } = genereteChangePasswordToken(user);
-  const link = `${WEBSITE_URL}/changePassword/${user.email}/${token}`;
+  const { token } = genereteChangePasswordToken(user, 'invitation');
+  const link = changePasswordLink(user, token);
 
   return send({
     to: [user.email],

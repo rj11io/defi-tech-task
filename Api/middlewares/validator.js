@@ -70,16 +70,16 @@ const errorParser = data => {
 exports.validator = schemas => (req, res, next) => {
   const schemasObj = typeof schemas === 'string' ? { body: schemas } : schemas;
 
-  Object.keys(schemasObj).forEach(key => {
+  const schemaKeys = Object.keys(schemasObj);
+  for (let index = 0; index < schemaKeys.length; index += 1) {
+    const key = schemaKeys[index];
     const validate = ajv.getSchema(schemasObj[key]);
 
     if (!validate) return next(ServerError('Missing validator schema'));
 
     const valid = validate(req[key]);
     if (!valid) return next(errorParser(validate.errors));
+  }
 
-    return true;
-  });
-
-  next();
+  return next();
 };

@@ -1,33 +1,46 @@
-version: "3.7"
-
 services:
   mongo:
-    image: mongo
+    image: mongo:8.2.11
     container_name: Fullstack-test-mongo
     env_file: ./Api/.env
     restart: always
-    ports:
-      - 27017:27017
     volumes:
       - ./Api/db/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
       - ./dbdata:/data/db
       - ./Api/db/seed:/seed
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mongosh --quiet --username $$MONGO_INITDB_ROOT_USERNAME --password $$MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval \"db.adminCommand('ping').ok\""
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 12
 
   api:
     image: node:20-alpine
     container_name: Fullstack-test-api
     env_file: ./Api/.env
     environment:
+      LIMITER: "1"
       MONGO_DATABASE_HOST: Fullstack-test-mongo
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     ports:
       - "4000:4000"
-      - "587:587"
     volumes:
       - ./Api:/data
+      - api_node_modules:/data/node_modules
     working_dir: /data
-    command: ./node_modules/.bin/nodemon
+    command: [sh, -c, "npm ci && ./node_modules/.bin/nodemon"]
+    init: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:4000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
 
   frontend:
     image: node:20-alpine
@@ -36,6 +49,17 @@ services:
       - "80:3000"
     volumes:
       - ./FrontEnd:/data
+      - frontend_node_modules:/data/node_modules
     working_dir: /data
-    command: [sh, -c, "npm rebuild esbuild && npm start"]
+    command: [sh, -c, "npm ci && npm start"]
     stdin_open: true
+    init: true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:3000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+volumes:
+  api_node_modules:
+  frontend_node_modules:

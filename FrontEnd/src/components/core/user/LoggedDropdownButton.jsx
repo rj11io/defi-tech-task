@@ -1,10 +1,8 @@
 /* eslint-disable no-nested-ternary */
 import { useContext, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Switch, Dropdown, Space } from 'antd';
+import { Button, Dropdown, Space } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPowerOff, faAngleDown, faCircle, faGlobe } from '@fortawesome/free-solid-svg-icons';
-import { FlagIcon } from 'react-flag-kit';
+import { faPowerOff, faAngleDown, faMoon } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 
 import AppContext from '../../../helpers/AppContext';
@@ -14,8 +12,7 @@ import '../../../styles/core/components/LoggedDropdownButton.css';
 
 import AuthContext from '../../../helpers/core/AuthContext';
 
-const UserDropdownButton = props => {
-  const { t, i18n } = useTranslation();
+const UserDropdownButton = ({ compact = false }) => {
   const { logged, signOut } = useContext(AuthContext);
   const { darkMode, setDarkMode } = useContext(AppContext);
   const navigate = useNavigate();
@@ -25,11 +22,8 @@ const UserDropdownButton = props => {
   const onClick = ({ key }) => {
     // eslint-disable-next-line default-case
     switch (key) {
-      case 'it':
-      case 'en':
-        return i18n.changeLanguage(key);
       case 'darkmode':
-        return setOpen(true);
+        return setDarkMode(!darkMode);
       case 'logout':
         return signOut(() => navigate('/', { intended: '/' }));
     }
@@ -37,69 +31,29 @@ const UserDropdownButton = props => {
 
   const items = [
     {
-      icon: <FontAwesomeIcon icon={faCircle} />,
-      label: (
-        <Space>
-          {t('common.darkMode')}
-          <Switch
-            checked={darkMode}
-            onChange={checked => setDarkMode(checked)}
-            checkedChildren="dark"
-            unCheckedChildren="light"
-            className="ml-8"
-          />
-        </Space>
-      ),
-      key: 'darkmode'
+      icon: <FontAwesomeIcon icon={faMoon} />,
+      label: `Dark mode · ${darkMode ? 'On' : 'Off'}`,
+      key: 'darkmode',
+      role: 'menuitemcheckbox',
+      'aria-checked': darkMode
     },
-    {
-      icon: <FontAwesomeIcon icon={faGlobe} />,
-      label: t('common.language'),
-      key: 'language',
-      children: [
-        {
-          key: 'it',
-          label: (
-            <Space>
-              <FlagIcon code="IT" size={14} className="w-5" />
-              Italiano
-            </Space>
-          )
-        },
-        {
-          key: 'en',
-          label: (
-            <Space>
-              <FlagIcon code="GB" size={14} className="w-5" />
-              English
-            </Space>
-          )
-        }
-      ]
-    },
-    {
-      type: 'divider'
-    },
+    { type: 'divider' },
     {
       icon: <FontAwesomeIcon icon={faPowerOff} />,
-      label: t('login.logout'),
+      label: 'Sign out',
       key: 'logout'
     }
   ];
 
   return (
-    <Dropdown.Button
-      size="large"
-      menu={{ items, onClick }}
-      type="text"
-      className="logged-dropdown-button"
-      onOpenChange={flag => setOpen(flag)}
-      open={open}
-      onClick={() => setOpen(true)}
-      icon={<FontAwesomeIcon icon={faAngleDown} />}
-    >
-      <UserInfo user={logged} link={false} />
-    </Dropdown.Button>
+    <Dropdown menu={{ items, onClick }} onOpenChange={flag => setOpen(flag)} open={open} trigger={['click']}>
+      <Button type="text" size="large" className="logged-dropdown-button" aria-label="Open account menu">
+        <Space size={8}>
+          <UserInfo user={logged} noText={compact} link={false} />
+          <FontAwesomeIcon icon={faAngleDown} />
+        </Space>
+      </Button>
+    </Dropdown>
   );
 };
 

@@ -1,155 +1,166 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Input, Button, Card, Col, Row, Modal, Alert, Typography } from 'antd';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
+import { Alert, Button, Card, Form, Input, Typography } from 'antd';
 
 import Api from '../../../helpers/core/Api';
 import AuthContext from '../../../helpers/core/AuthContext';
 
-import logo from '../../../img/logo.svg';
-
-const { Title } = Typography;
+const { Paragraph, Text, Title } = Typography;
 
 const Login = () => {
   const { t } = useTranslation();
   const { signIn } = useContext(AuthContext);
-
-  const MODE = { LOGIN: t('login.login'), FORGOT_PWD: t('login.forgotPasswordBtn') };
-
-  const [loginMode, setLoginMode] = useState(MODE.LOGIN);
-
-  const [emailError, setEmailError] = useState(false);
-  const [pwdError, setPwdError] = useState(false);
-  const [forgotPwdOk, setForgotPwdOk] = useState(false);
-
+  const [mode, setMode] = useState('login');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [forgotPasswordSent, setForgotPasswordSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [form] = Form.useForm();
 
   useEffect(() => {
-    setEmailError(false);
-    setPwdError(false);
-    setForgotPwdOk(false);
-  }, [loginMode]);
+    setEmailError('');
+    setPasswordError('');
+    setForgotPasswordSent(false);
+    form.resetFields();
+  }, [form, mode]);
 
-  const handleSubmit = ({ email = '', password = '' }) => {
-    if (loginMode === MODE.LOGIN) {
-      return signIn(email, password).catch(err => {
-        const errorCode = err.response && err.response.data ? err.response.data.error : null;
-        if (errorCode === 300) return setEmailError(t(`core:errors.${errorCode}`));
-        if (errorCode === 301) return setPwdError(t(`core:errors.${errorCode}`));
+  const handleSubmit = async ({ email = '', password = '' }) => {
+    setSubmitting(true);
+    setEmailError('');
+    setPasswordError('');
 
-        return err?.globalHandler();
-      });
+    try {
+      if (mode === 'login') {
+        await signIn(email, password);
+        return;
+      }
+
+      await Api.post('/auth/forgotPassword', { email });
+      setForgotPasswordSent(true);
+    } catch (error) {
+      const errorCode = error.response?.data?.error;
+      if (errorCode === 300 || errorCode === 404)
+        setEmailError(t(`core:errors.${errorCode === 404 ? 210 : errorCode}`));
+      else if (errorCode === 301) setPasswordError(t(`core:errors.${errorCode}`));
+      else error?.globalHandler?.();
+    } finally {
+      setSubmitting(false);
     }
-
-    return Api.post(`/auth/forgotPassword`, { email })
-      .then(() => {
-        setForgotPwdOk(true);
-      })
-      .catch(err => {
-        const errorCode = err.response && err.response.data ? err.response.data.error : null;
-        if (errorCode === 404) return setEmailError(t('core:errors.210'));
-
-        return err?.globalHandler();
-      });
   };
 
-  const validateMessages = { required: t('core:errors.201') };
+  if (!navigator.cookieEnabled) {
+    return (
+      <div className="auth-shell">
+        <Alert
+          type="error"
+          showIcon
+          message="Cookies are required"
+          description="Enable cookies in your browser to sign in securely, then refresh this page."
+        />
+      </div>
+    );
+  }
 
-  return navigator.cookieEnabled ? (
-    <div className="mx-auto flex flex-col items-center justify-center px-6 py-8 md:h-screen lg:py-0">
-      <img src={logo} alt="Logo" id="logo" className="2 mb-4 h-14 w-auto" />
-      <Title className="mb-6 flex items-center text-2xl">
-        {t('login.title', { project: import.meta.env.VITE_NAME })}
-      </Title>
-      <Card className="w-full sm:max-w-md md:mt-0 xl:p-0">
-        <Form
-          id="loginForm"
-          form={form}
-          layout="vertical"
-          requiredMark={false}
-          validateMessages={validateMessages}
-          onFinish={handleSubmit}
-          validateTrigger="onSubmit"
-        >
-          {forgotPwdOk && <Alert message={t('login.changePasswordEmailSent')} type="success" className="mb-6" />}
+  return (
+    <div className="auth-shell">
+      <section className="auth-intro" aria-labelledby="auth-heading">
+        <div className="auth-brand">
+          <span className="brand-mark" aria-hidden="true">
+            D
+          </span>
+          <Text strong>Daybook</Text>
+        </div>
+        <Text className="eyebrow">Personal finance, simplified</Text>
+        <Title id="auth-heading">Know where your money goes.</Title>
+        <Paragraph>
+          A focused diary for daily income and expenses, with a clear monthly picture whenever you need it.
+        </Paragraph>
+        <div className="auth-proof">
+          <Text strong>One calm view</Text>
+          <Text type="secondary">Monthly totals, spending categories, and every entry together.</Text>
+        </div>
+      </section>
+
+      <Card className="auth-card">
+        <Title level={2}>{mode === 'login' ? 'Welcome back' : 'Reset your password'}</Title>
+        <Paragraph type="secondary">
+          {mode === 'login' ? 'Sign in to continue to your diary.' : 'We’ll email you a secure reset link.'}
+        </Paragraph>
+
+        {mode === 'login' && (
+          <Alert
+            type="info"
+            showIcon
+            className="auth-demo-alert"
+            message="Demo account"
+            description={
+              <span>
+                Use <strong>test@meblabs.com</strong> with password <strong>testtest</strong>.
+              </span>
+            }
+          />
+        )}
+
+        {forgotPasswordSent && (
+          <Alert
+            message="Reset email sent"
+            description="If an account matches that address, check its inbox for the next step."
+            type="success"
+            showIcon
+            className="auth-demo-alert"
+          />
+        )}
+
+        <Form form={form} layout="vertical" requiredMark={false} onFinish={handleSubmit} disabled={submitting}>
           <Form.Item
             name="email"
+            label="Email address"
             validateStatus={emailError ? 'error' : undefined}
             help={emailError || undefined}
-            onChange={() => setEmailError(false)}
-            rules={[
-              {
-                required: true,
-                type: 'email',
-                message: t('core:errors.210')
-              }
-            ]}
+            rules={[{ required: true, type: 'email', message: 'Enter a valid email address' }]}
           >
             <Input
-              name="email"
               type="email"
               autoComplete="email"
               autoFocus
-              addonBefore={<FontAwesomeIcon icon={faUser} />}
-              placeholder={t('core:fields.email')}
-              disabled={forgotPwdOk}
+              placeholder="you@example.com"
+              onChange={() => setEmailError('')}
+              disabled={forgotPasswordSent}
             />
           </Form.Item>
-          {loginMode === MODE.LOGIN && (
+
+          {mode === 'login' && (
             <Form.Item
               name="password"
-              validateStatus={pwdError ? 'error' : undefined}
-              help={pwdError || undefined}
-              onChange={() => setPwdError(false)}
-              rules={[
-                {
-                  required: true
-                }
-              ]}
+              label="Password"
+              validateStatus={passwordError ? 'error' : undefined}
+              help={passwordError || undefined}
+              rules={[{ required: true, message: 'Enter your password' }]}
             >
               <Input.Password
-                name="current-password"
                 autoComplete="current-password"
-                type="password"
-                addonBefore={<FontAwesomeIcon icon={faLock} />}
-                placeholder={t('core:fields.password')}
+                placeholder="Your password"
+                onChange={() => setPasswordError('')}
               />
             </Form.Item>
           )}
 
-          {loginMode !== MODE.FORGOT_PWD ? (
-            <Form.Item className="text-center">
-              <Button type="link" onClick={() => setLoginMode(MODE.FORGOT_PWD)}>
-                {t('login.forgotPassword')}
-              </Button>
-            </Form.Item>
-          ) : (
-            ''
-          )}
-
-          <Row wrap={false}>
-            {loginMode !== MODE.LOGIN ? (
-              <Col flex="none">
-                <Button onClick={() => setLoginMode(MODE.LOGIN)}>{t('common.back')}</Button>
-              </Col>
-            ) : (
-              ''
-            )}
-            <Col flex="auto" className="text-right">
-              <Button form="loginForm" type="primary" htmlType="submit">
-                {loginMode}
-              </Button>
-            </Col>
-          </Row>
+          <Button type="primary" htmlType="submit" block loading={submitting} disabled={forgotPasswordSent}>
+            {mode === 'login' ? 'Sign in' : 'Send reset link'}
+          </Button>
         </Form>
+
+        <Button
+          type="link"
+          block
+          className="auth-mode-button"
+          onClick={() => setMode(currentMode => (currentMode === 'login' ? 'forgot' : 'login'))}
+          disabled={submitting}
+        >
+          {mode === 'login' ? 'Forgot your password?' : 'Back to sign in'}
+        </Button>
       </Card>
     </div>
-  ) : (
-    Modal.error({
-      title: t('cookie.title'),
-      content: t('cookie.message')
-    })
   );
 };
 
