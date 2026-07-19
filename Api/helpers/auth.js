@@ -1,4 +1,31 @@
 const jwt = require('jsonwebtoken');
+const Rt = require('../models/rt');
+
+const secret = () => process.env.JWT_SECRET || 'secret';
+
+const genereteAuthToken = user => ({
+  token: jwt.sign(
+    {
+      id: user._id.toString(),
+      email: user.email,
+      role: user.role || user.roles?.[0]
+    },
+    secret(),
+    { expiresIn: '24h' }
+  )
+});
+
+const genereteChangePasswordToken = user => ({
+  token: jwt.sign(
+    {
+      id: user._id.toString(),
+      email: user.email,
+      authReset: user.authReset || null
+    },
+    secret(),
+    { expiresIn: '1h' }
+  )
+});
 
 const generateToken = async (res, user) => {
   // Handle both real user objects and mock user objects
@@ -12,7 +39,7 @@ const generateToken = async (res, user) => {
       email: userEmail,
       role: userRole
     },
-    process.env.JWT_SECRET || 'secret',
+    secret(),
     { expiresIn: '24h' }
   );
   
@@ -22,7 +49,7 @@ const generateToken = async (res, user) => {
       email: userEmail,
       role: userRole
     },
-    process.env.JWT_SECRET || 'secret',
+    process.env.RT_SECRET || secret(),
     { expiresIn: '7d' }
   );
   
@@ -43,6 +70,13 @@ const generateToken = async (res, user) => {
     maxAge: 24 * 60 * 60 * 1000,
     sameSite: 'lax'
   });
+
+  await Rt.deleteMany({ user: userId });
+  await Rt.create({
+    token: refreshToken,
+    user: userId,
+    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+  });
   
   return { accessToken, refreshToken };
 };
@@ -55,5 +89,7 @@ const clearTokens = (res) => {
 
 module.exports = {
   generateToken,
-  clearTokens
+  clearTokens,
+  genereteAuthToken,
+  genereteChangePasswordToken
 };

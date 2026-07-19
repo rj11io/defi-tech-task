@@ -5,12 +5,13 @@ const userRbac = async (caller, resourceId, { authorizedRoles = [], customCondit
   const user = await User.findById(resourceId, {});
   if (!user) return null;
 
-  const { id: _id, company, roles: globalRoles } = caller;
-  const { roles: companyRoles } = company;
+  const { company = {}, roles: globalRoles = [] } = caller;
+  const callerId = caller._id || caller.id;
+  const companyRoles = company.roles || [];
   const roles = Array.from(new Set([...companyRoles, ...globalRoles]));
 
   if (roles.includes('superuser')) return user;
-  if (onHimself && resourceId?.toString() === _id?.toString()) return user;
+  if (onHimself && resourceId?.toString() === callerId?.toString()) return user;
   if (customCondition && customCondition(caller, user) === true) return user;
 
   if (company?.id?.toString() === user?.company?.id?.toString() && intersection(authorizedRoles, roles).length)

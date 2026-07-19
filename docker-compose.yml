@@ -17,6 +17,8 @@ services:
     image: node:20-alpine
     container_name: Fullstack-test-api
     env_file: ./Api/.env
+    environment:
+      MONGO_DATABASE_HOST: Fullstack-test-mongo
     depends_on:
       - mongo
     ports:

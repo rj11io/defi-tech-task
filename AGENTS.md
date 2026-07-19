@@ -1,6 +1,6 @@
 Your job is to execute the task in the root README to the best of your ability and to a very high degree of quality, use the local project skills to help you if needed.
 
-You should run the project using docker or check for running containers, make an effort to build a coesive and well-structured layout using Ant Design components, prioritize design and styling through the Ant Design theme before hardcoding any styles.
+You should run the project using docker or restart running containers, make an effort to build a coesive and well-structured layout using Ant Design components, prioritize design and styling through the Ant Design theme before hardcoding any styles.
 
 When you are done with the task to a very high degree of satisfaction, do a polishing pass across code-quality, bugfixing, ui, ux, performance, security, metadata and documentation.
 

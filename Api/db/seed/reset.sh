@@ -1,5 +1,5 @@
 #!/bin/bash
-cd seed
+cd /seed
 
 dir=$(ls *.json)
 for file in $dir; do

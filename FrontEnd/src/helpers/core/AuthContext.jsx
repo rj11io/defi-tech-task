@@ -64,6 +64,13 @@ export const AuthContextProvider = ({ children }) => {
     const prevRequest = error?.config;
     const statusCode = error?.response?.status;
     const customErrorCode = error?.response?.data?.error;
+    const requestUrl = prevRequest?.url || '';
+
+    // A missing session on the initial check is a normal signed-out state.
+    // Do not try to refresh it, otherwise /auth/check -> /auth/rt can loop.
+    if (requestUrl.endsWith('/auth/check') || requestUrl.endsWith('/auth/rt')) {
+      return Promise.reject(error);
+    }
 
     if (customErrorCode === 306 || customErrorCode === 307 || customErrorCode === 308) return signOut();
 
