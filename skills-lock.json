@@ -361,6 +361,12 @@
       "skillPath": "v0/plugins/11ai-llm-costs/skills/11ai-llm-cost-single-thread/SKILL.md",
       "computedHash": "f321078a0844fca189ab527066ef66df11a4a2e319d45c697282a64af0611081"
     },
+    "11ai-modern-clean-ui": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-web-design/skills/11ai-modern-clean-ui/SKILL.md",
+      "computedHash": "a054af0cb764c36522d62819b38d0bf8018823f3558efe765f8475a0e1e6dd5f"
+    },
     "11ai-mongodb-aggregation": {
       "source": "rj11io/11ai",
       "sourceType": "github",
