@@ -1,5 +1,31 @@
 const jwt = require('jsonwebtoken');
 
+const secret = () => process.env.JWT_SECRET || 'secret';
+
+const genereteAuthToken = user => ({
+  token: jwt.sign(
+    {
+      id: user._id.toString(),
+      email: user.email,
+      role: user.role || user.roles?.[0]
+    },
+    secret(),
+    { expiresIn: '24h' }
+  )
+});
+
+const genereteChangePasswordToken = user => ({
+  token: jwt.sign(
+    {
+      id: user._id.toString(),
+      email: user.email,
+      authReset: user.authReset || null
+    },
+    secret(),
+    { expiresIn: '1h' }
+  )
+});
+
 const generateToken = async (res, user) => {
   // Handle both real user objects and mock user objects
   const userId = user._id || user.id;
@@ -12,7 +38,7 @@ const generateToken = async (res, user) => {
       email: userEmail,
       role: userRole
     },
-    process.env.JWT_SECRET || 'secret',
+    secret(),
     { expiresIn: '24h' }
   );
   
@@ -22,7 +48,7 @@ const generateToken = async (res, user) => {
       email: userEmail,
       role: userRole
     },
-    process.env.JWT_SECRET || 'secret',
+    secret(),
     { expiresIn: '7d' }
   );
   
@@ -55,5 +81,7 @@ const clearTokens = (res) => {
 
 module.exports = {
   generateToken,
-  clearTokens
+  clearTokens,
+  genereteAuthToken,
+  genereteChangePasswordToken
 };

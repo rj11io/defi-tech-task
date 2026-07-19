@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Importa tutti i json presenti nella cartella seed/ nelle collection del db
-cd seed
+cd /seed
 
 dir=$(ls *.json)
 for file in $dir; do

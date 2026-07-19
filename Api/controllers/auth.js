@@ -4,6 +4,9 @@ const {
   SendData,
   ServerError,
   NotFound,
+  WrongEmail,
+  WrongPassword,
+  InactiveAccount,
   EmailAlreadyExists,
   DeletedAccount,
   Unauthorized,
@@ -16,47 +19,22 @@ const { langs, defaultLang } = require('../config');
 const { canChangePassword } = require('../rbac/users');
 const { canUpdateCompany } = require('../rbac/companies');
 
-// FIXED: Mock-compatible login that doesn't rely on passport local strategy
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    
-    // For testing with mock database, accept any credentials
-    // In production, you would validate against the database
-    if (!email || !password) {
-      return next(BadRequest('Email and password required'));
-    }
-    
-    // Create a mock user object for testing
-    const mockUser = {
-      _id: '1',
-      email: email,
-      name: 'Test User',
-      lastname: 'User',
-      fullname: 'Test User',
-      role: 'user',
-      lang: 'en',
-      phone: '+1234567890',
-      active: true,
-      deleted: false,
-      response: function() {
-        return {
-          id: this._id,
-          email: this.email,
-          name: this.name,
-          lastname: this.lastname,
-          fullname: this.fullname,
-          role: this.role,
-          lang: this.lang,
-          phone: this.phone
-        };
-      }
-    };
-    
-    // Generate tokens
-    await generateToken(res, mockUser);
-    
-    return next(SendData(mockUser.response()));
+
+    const user = await User.findOne({ email }).setOptions({ internalGet: true });
+    if (!user) return next(WrongEmail());
+    if (user.deleted) return next(DeletedAccount());
+    if (!user.active) return next(InactiveAccount());
+
+    const validPassword = await new Promise((resolve, reject) => {
+      user.comparePassword(password, (err, match) => (err ? reject(err) : resolve(match)));
+    });
+    if (!validPassword) return next(WrongPassword());
+
+    await generateToken(res, user);
+    return next(SendData(user.response('cp')));
   } catch (e) {
     return next(ServerError(e));
   }
@@ -65,32 +43,7 @@ exports.login = async (req, res, next) => {
 // Keep all other functions as they are, but make them work with mock data
 exports.check = async (req, res, next) => {
   try {
-    // Return mock user data for testing
-    const mockData = {
-      _id: '1',
-      email: 'test@meblabs.com',
-      name: 'Test User',
-      lastname: 'User',
-      fullname: 'Test User',
-      role: 'user',
-      lang: 'en',
-      phone: '+1234567890',
-      active: true,
-      deleted: false,
-      response: function() {
-        return {
-          id: this._id,
-          email: this.email,
-          name: this.name,
-          lastname: this.lastname,
-          fullname: this.fullname,
-          role: this.role,
-          lang: this.lang,
-          phone: this.phone
-        };
-      }
-    };
-    return next(SendData(mockData.response()));
+    return next(SendData(req.user.response('profile')));
   } catch (err) {
     return next(Unauthorized(err));
   }
