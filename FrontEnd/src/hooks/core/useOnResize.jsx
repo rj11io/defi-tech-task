@@ -1,18 +1,27 @@
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 
 const useOnResize = (handleResize, debounce = 300) => {
+  const handlerRef = useRef(handleResize);
+
+  useLayoutEffect(() => {
+    handlerRef.current = handleResize;
+  }, [handleResize]);
+
   useLayoutEffect(() => {
     let timeout;
-    const onResize = d => {
+    const onResize = () => {
       clearTimeout(timeout);
-      timeout = setTimeout(() => handleResize(), d);
+      timeout = setTimeout(() => handlerRef.current(), debounce);
     };
 
-    window.addEventListener('resize', () => onResize(debounce));
-    onResize(0);
+    window.addEventListener('resize', onResize);
+    handlerRef.current();
 
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
+    return () => {
+      clearTimeout(timeout);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [debounce]);
 };
 
 export default useOnResize;

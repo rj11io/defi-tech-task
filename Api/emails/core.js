@@ -4,6 +4,7 @@
 /* eslint-disable no-undef */
 const fs = require('fs');
 const path = require('path');
+const { SESClient, SendTemplatedEmailCommand } = require('@aws-sdk/client-ses');
 
 const { COMMON_EMAIL, COMMON_EMAIL_NAME } = require('../config');
 
@@ -17,6 +18,8 @@ if (ENV === 'dev') {
     secretAccessKey: AWS_SECRET_ACCESS_KEY
   };
 }
+
+const emailClient = new SESClient(params);
 
 const localesPath = `${__dirname}/locales/`;
 const emailLangs = fs
@@ -67,4 +70,6 @@ module.exports.send = async ({ template = 'common', to = ['design@meblabs.com'],
       ToAddresses: to
     }
   });
+
+  return emailClient.send(command);
 };

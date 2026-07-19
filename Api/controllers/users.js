@@ -2,7 +2,6 @@ const User = require('../models/user');
 const { SendData, ServerError, NotFound, Unauthorized } = require('../helpers/response');
 const { canGetUser, canDeleteUser, canUpdateUser } = require('../rbac/users');
 const getter = require('../helpers/getter');
-const { canGetCompany } = require('../rbac/companies');
 
 const userQuery = ({ filter }) => {
   const query = {};

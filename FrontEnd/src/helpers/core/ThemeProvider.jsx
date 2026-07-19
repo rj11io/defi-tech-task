@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { ConfigProvider, theme, App } from 'antd';
 
 import AppContext from '../AppContext';
@@ -9,8 +9,10 @@ const { defaultAlgorithm, darkAlgorithm } = theme;
 const ThemeProvider = ({ children }) => {
   const { darkMode } = useContext(AppContext);
 
-  if (darkMode) document.body.classList.add('dark');
-  else document.body.classList.remove('dark');
+  useEffect(() => {
+    document.body.classList.toggle('dark', darkMode);
+    document.documentElement.style.colorScheme = darkMode ? 'dark' : 'light';
+  }, [darkMode]);
 
   return (
     <ConfigProvider theme={{ algorithm: darkMode ? darkAlgorithm : defaultAlgorithm, ...(darkMode ? dark : light) }}>

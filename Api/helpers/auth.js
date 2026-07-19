@@ -1,7 +1,11 @@
 const jwt = require('jsonwebtoken');
 const Rt = require('../models/rt');
 
-const secret = () => process.env.JWT_SECRET || 'secret';
+const secret = () => {
+  if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is required');
+  return process.env.JWT_SECRET;
+};
+const secureCookies = process.env.ENV === 'production' || process.env.ENV === 'staging';
 
 const genereteAuthToken = user => ({
   token: jwt.sign(
@@ -32,7 +36,7 @@ const generateToken = async (res, user) => {
   const userId = user._id || user.id;
   const userEmail = user.email;
   const userRole = user.role || 'user';
-  
+
   const accessToken = jwt.sign(
     {
       id: userId,
@@ -42,7 +46,7 @@ const generateToken = async (res, user) => {
     secret(),
     { expiresIn: '24h' }
   );
-  
+
   const refreshToken = jwt.sign(
     {
       id: userId,
@@ -52,21 +56,24 @@ const generateToken = async (res, user) => {
     process.env.RT_SECRET || secret(),
     { expiresIn: '7d' }
   );
-  
+
   // Set cookies
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
+    secure: secureCookies,
     maxAge: 24 * 60 * 60 * 1000,
     sameSite: 'lax'
   });
-  
+
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
+    secure: secureCookies,
     maxAge: 7 * 24 * 60 * 60 * 1000,
     sameSite: 'lax'
   });
-  
+
   res.cookie('logged', true, {
+    secure: secureCookies,
     maxAge: 24 * 60 * 60 * 1000,
     sameSite: 'lax'
   });
@@ -77,11 +84,11 @@ const generateToken = async (res, user) => {
     user: userId,
     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
   });
-  
+
   return { accessToken, refreshToken };
 };
 
-const clearTokens = (res) => {
+const clearTokens = res => {
   res.clearCookie('accessToken');
   res.clearCookie('refreshToken');
   res.clearCookie('logged');

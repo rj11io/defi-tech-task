@@ -15,7 +15,7 @@ module.exports = {
   ServerError: data =>
     Response('System error: operation not completed, please refresh the page or try again later', 500, data, 1),
 
-  RateLimitError: data => Response('Too many requests from this IP, please try again later.', 500, data, 2),
+  RateLimitError: data => Response('Too many requests from this IP, please try again later.', 429, data, 2),
 
   /* 200 - validation errors */
 

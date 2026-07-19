@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { lazy, useContext } from 'react';
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import { Layout } from 'antd';
 
@@ -7,14 +7,13 @@ import AuthContext, { AuthStatus } from '../helpers/core/AuthContext';
 import ErrorPage from '../components/core/extra/ErrorPage';
 import FullpageLoading from '../components/core/extra/FullpageLoading';
 import Header from '../components/core/layout/Header';
-import Sidebar from '../components/core/layout/Sidebar';
-
-import Login from '../components/core/user/Login';
-import ChangePassword from '../components/core/user/ChangePassword';
-import Home from './Home';
 
 import AuthRoute from '../components/routes/AuthRoute';
 import GuestRoute from '../components/routes/GuestRoute';
+
+const Login = lazy(() => import('../components/core/user/Login'));
+const ChangePassword = lazy(() => import('../components/core/user/ChangePassword'));
+const Home = lazy(() => import('./Home'));
 
 const { Content } = Layout;
 
@@ -30,12 +29,9 @@ const Index = () => {
         <Layout className="min-h-[100vh]">
           <AuthRoute outlet={false}>
             <Header />
-            <Layout>
-              <Sidebar />
-              <Content>
-                <Outlet />
-              </Content>
-            </Layout>
+            <Content>
+              <Outlet />
+            </Content>
           </AuthRoute>
         </Layout>
       ),

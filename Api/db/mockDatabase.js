@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 // In-memory database - replaces MongoDB completely
 const bcrypt = require('bcryptjs');
 
@@ -19,24 +20,16 @@ const mockData = {
 // Mock database methods
 const mockDB = {
   // User methods
-  findUserByEmail: async (email) => {
-    return mockData.users.find(u => u.email === email);
-  },
-  
-  findUserById: async (id) => {
-    return mockData.users.find(u => u._id === id);
-  },
-  
+  findUserByEmail: async email => mockData.users.find(u => u.email === email),
+
+  findUserById: async id => mockData.users.find(u => u._id === id),
+
   // Transaction methods
-  findTransactionsByUser: async (userId) => {
-    return mockData.transactions.filter(t => t.userId === userId);
-  },
-  
-  findTransactionById: async (id) => {
-    return mockData.transactions.find(t => t._id === id);
-  },
-  
-  createTransaction: async (transactionData) => {
+  findTransactionsByUser: async userId => mockData.transactions.filter(t => t.userId === userId),
+
+  findTransactionById: async id => mockData.transactions.find(t => t._id === id),
+
+  createTransaction: async transactionData => {
     const newTransaction = {
       _id: String(Date.now()),
       ...transactionData,
@@ -46,7 +39,7 @@ const mockDB = {
     mockData.transactions.push(newTransaction);
     return newTransaction;
   },
-  
+
   updateTransaction: async (id, updateData) => {
     const index = mockData.transactions.findIndex(t => t._id === id);
     if (index !== -1) {
@@ -59,8 +52,8 @@ const mockDB = {
     }
     return null;
   },
-  
-  deleteTransaction: async (id) => {
+
+  deleteTransaction: async id => {
     const index = mockData.transactions.findIndex(t => t._id === id);
     if (index !== -1) {
       mockData.transactions.splice(index, 1);
@@ -77,7 +70,7 @@ class MockUser {
     if (query._id) return mockDB.findUserById(query._id);
     return null;
   }
-  
+
   static async findById(id) {
     return mockDB.findUserById(id);
   }
@@ -90,28 +83,26 @@ class MockTransaction {
     }
     return mockData.transactions;
   }
-  
+
   static async findById(id) {
     return mockDB.findTransactionById(id);
   }
-  
+
   static async create(data) {
     return mockDB.createTransaction(data);
   }
-  
+
   static async findByIdAndUpdate(id, data) {
     return mockDB.updateTransaction(id, data);
   }
-  
+
   static async findByIdAndDelete(id) {
     return mockDB.deleteTransaction(id);
   }
 }
 
 // Mock connection function
-const connectDB = async () => {
-  return true;
-};
+const connectDB = async () => true;
 
 module.exports = {
   connectDB,
