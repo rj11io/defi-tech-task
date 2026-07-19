@@ -63,11 +63,8 @@ const isAuthRt = (req, res, next) => {
 
 const isAuthRtlogout = (req, res, next) => isAuth(req, res, next);
 
-const isAuthChangePassword = (req, res, next) => next();
-
 module.exports = {
   isAuth,
   isAuthRt,
-  isAuthRtlogout,
-  isAuthChangePassword
+  isAuthRtlogout
 };

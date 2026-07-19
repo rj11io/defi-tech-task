@@ -21,7 +21,7 @@
   }
 }
 
-@media screen and (min-width: theme('screens.md')) {
+@media screen and (width >= 768px) {
   .ant-layout-sider {
     display: block;
   }

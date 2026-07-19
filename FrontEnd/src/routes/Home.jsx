@@ -38,6 +38,7 @@ const Home = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [deletingId, setDeletingId] = useState(null);
 
   const loadEntries = useCallback(
@@ -88,25 +89,35 @@ const Home = () => {
 
   const openCreate = () => {
     setEditingEntry(null);
+    setSaveError('');
     setDrawerOpen(true);
   };
 
   const openEdit = entry => {
     setEditingEntry(entry);
+    setSaveError('');
     setDrawerOpen(true);
   };
 
   const saveEntry = async values => {
     setSaving(true);
+    setSaveError('');
     try {
-      if (editingEntry) await Api.patch(`/transactions/${editingEntry._id}`, values);
-      else await Api.post('/transactions', values);
+      const response = editingEntry
+        ? await Api.patch(`/transactions/${editingEntry._id}`, values)
+        : await Api.post('/transactions', values);
+      setEntries(currentEntries => {
+        const otherEntries = currentEntries.filter(entry => entry._id !== response.data._id);
+        const nextEntries = dayjs(response.data.date).isSame(selectedMonth, 'month')
+          ? [response.data, ...otherEntries]
+          : otherEntries;
+        return nextEntries.sort((first, second) => new Date(second.date).getTime() - new Date(first.date).getTime());
+      });
       setDrawerOpen(false);
       setEditingEntry(null);
       message.success(editingEntry ? 'Entry updated' : 'Entry added');
-      await loadEntries();
     } catch (requestError) {
-      setError('The entry could not be saved. Review the details and try again.');
+      setSaveError('The entry could not be saved. Review the details and try again.');
     } finally {
       setSaving(false);
     }
@@ -156,7 +167,7 @@ const Home = () => {
   };
 
   return (
-    <main className="dashboard-shell">
+    <div className="dashboard-shell">
       <div className="dashboard-container">
         <Flex className="page-heading" align="flex-start" justify="space-between" gap={16} wrap>
           <div>
@@ -263,11 +274,13 @@ const Home = () => {
       <TransactionDrawer
         open={drawerOpen}
         entry={editingEntry}
+        defaultDate={selectedMonth}
         saving={saving}
+        saveError={saveError}
         onClose={() => !saving && setDrawerOpen(false)}
         onSave={saveEntry}
       />
-    </main>
+    </div>
   );
 };
 

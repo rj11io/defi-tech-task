@@ -32,8 +32,9 @@ services:
       - "4000:4000"
     volumes:
       - ./Api:/data
+      - api_node_modules:/data/node_modules
     working_dir: /data
-    command: ./node_modules/.bin/nodemon
+    command: [sh, -c, "npm ci && ./node_modules/.bin/nodemon"]
     init: true
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:4000/"]
@@ -48,8 +49,9 @@ services:
       - "80:3000"
     volumes:
       - ./FrontEnd:/data
+      - frontend_node_modules:/data/node_modules
     working_dir: /data
-    command: [sh, -c, "npm rebuild esbuild && npm start"]
+    command: [sh, -c, "npm ci && npm start"]
     stdin_open: true
     init: true
     healthcheck:
@@ -57,3 +59,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 6
+
+volumes:
+  api_node_modules:
+  frontend_node_modules:

@@ -24,8 +24,7 @@ const schema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-      immutable: true,
-      index: true
+      immutable: true
     },
     type: {
       type: String,

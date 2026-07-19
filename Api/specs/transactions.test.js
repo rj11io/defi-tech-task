@@ -103,6 +103,23 @@ describe('transactions API', () => {
       });
   });
 
+  test('returns the complete bounded month without silently truncating totals', async () => {
+    const owner = await createUser('high-volume@example.com');
+    const entries = Array.from({ length: 501 }, (_, index) => ({
+      ...entry,
+      userId: owner._id,
+      amount: index + 1,
+      description: `Entry ${index + 1}`
+    }));
+    await Transaction.insertMany(entries);
+
+    await agent
+      .get('/transactions?from=2026-07-01T00:00:00.000Z&to=2026-07-31T23:59:59.999Z')
+      .set('Cookie', cookieFor(owner))
+      .expect(200)
+      .then(response => expect(response.body).toHaveLength(501));
+  });
+
   test('rejects malformed or unexpected data', async () => {
     const user = await createUser('owner@example.com');
     const cookie = cookieFor(user);

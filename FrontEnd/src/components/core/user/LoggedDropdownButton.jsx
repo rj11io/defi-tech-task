@@ -1,8 +1,8 @@
 /* eslint-disable no-nested-ternary */
 import { useContext, useState } from 'react';
-import { Button, Switch, Dropdown, Space } from 'antd';
+import { Button, Dropdown, Space } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPowerOff, faAngleDown, faCircle } from '@fortawesome/free-solid-svg-icons';
+import { faPowerOff, faAngleDown, faMoon } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 
 import AppContext from '../../../helpers/AppContext';
@@ -23,7 +23,7 @@ const UserDropdownButton = ({ compact = false }) => {
     // eslint-disable-next-line default-case
     switch (key) {
       case 'darkmode':
-        return setOpen(true);
+        return setDarkMode(!darkMode);
       case 'logout':
         return signOut(() => navigate('/', { intended: '/' }));
     }
@@ -31,19 +31,11 @@ const UserDropdownButton = ({ compact = false }) => {
 
   const items = [
     {
-      icon: <FontAwesomeIcon icon={faCircle} />,
-      label: (
-        <Space>
-          Dark mode
-          <Switch
-            checked={darkMode}
-            onChange={checked => setDarkMode(checked)}
-            aria-label="Toggle dark mode"
-            className="ml-8"
-          />
-        </Space>
-      ),
-      key: 'darkmode'
+      icon: <FontAwesomeIcon icon={faMoon} />,
+      label: `Dark mode · ${darkMode ? 'On' : 'Off'}`,
+      key: 'darkmode',
+      role: 'menuitemcheckbox',
+      'aria-checked': darkMode
     },
     { type: 'divider' },
     {

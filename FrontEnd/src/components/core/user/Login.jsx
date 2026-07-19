@@ -50,19 +50,19 @@ const Login = () => {
 
   if (!navigator.cookieEnabled) {
     return (
-      <main className="auth-shell">
+      <div className="auth-shell">
         <Alert
           type="error"
           showIcon
           message="Cookies are required"
           description="Enable cookies in your browser to sign in securely, then refresh this page."
         />
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="auth-shell">
+    <div className="auth-shell">
       <section className="auth-intro" aria-labelledby="auth-heading">
         <div className="auth-brand">
           <span className="brand-mark" aria-hidden="true">
@@ -104,7 +104,7 @@ const Login = () => {
         {forgotPasswordSent && (
           <Alert
             message="Reset email sent"
-            description="Check your inbox for the next step."
+            description="If an account matches that address, check its inbox for the next step."
             type="success"
             showIcon
             className="auth-demo-alert"
@@ -160,7 +160,7 @@ const Login = () => {
           {mode === 'login' ? 'Forgot your password?' : 'Back to sign in'}
         </Button>
       </Card>
-    </main>
+    </div>
   );
 };
 

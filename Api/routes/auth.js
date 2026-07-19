@@ -65,7 +65,7 @@ const {
   changePassword,
   restoreUser
 } = require('../controllers/auth');
-const { isAuth, isAuthRt, isAuthRtlogout, isAuthChangePassword } = require('../middlewares/isAuth');
+const { isAuth, isAuthRt, isAuthRtlogout } = require('../middlewares/isAuth');
 const { validator } = require('../middlewares/validator');
 const { resendActivationEmail } = require('../controllers/auth');
 
@@ -119,14 +119,13 @@ router.get('/rt', isAuthRt, refreshToken);
 
 router.get('/logout', isAuthRtlogout, logout);
 
-router.post('/forgotPassword', forgotPassword);
+router.post('/forgotPassword', validator('checkEmail'), forgotPassword);
 
 router.post('/restoreUser', restoreUser);
 
 router.patch(
   '/changePassword/:email/:token',
   validator({ body: 'changePassword', params: 'changePasswordParams' }),
-  isAuthChangePassword,
   changePassword
 );
 

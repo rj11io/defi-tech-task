@@ -27,9 +27,12 @@ export const getSummary = entries => {
 };
 
 export const getExpenseBreakdown = entries => {
-  const totals = entries
+  const totals = {};
+  entries
     .filter(entry => entry.type === 'expense')
-    .reduce((result, entry) => ({ ...result, [entry.category]: (result[entry.category] || 0) + entry.amount }), {});
+    .forEach(entry => {
+      totals[entry.category] = (totals[entry.category] || 0) + entry.amount;
+    });
   const overall = Object.values(totals).reduce((sum, amount) => sum + amount, 0);
 
   return Object.entries(totals)

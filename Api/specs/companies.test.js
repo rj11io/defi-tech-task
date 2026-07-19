@@ -4,7 +4,7 @@ const app = require('../app');
 const db = require('../db/connect-test');
 const Company = require('../models/company');
 const User = require('../models/user');
-const { genereteAuthToken } = require('../helpers/auth');
+const { genereteAuthToken, genereteChangePasswordToken } = require('../helpers/auth');
 
 const agent = supertest.agent(app);
 
@@ -502,7 +502,7 @@ describe('Role: superadmin', () => {
           });
         })
         .then(() => User.findById(id))
-        .then(data =>
+        .then(data => {
           expect(JSON.parse(JSON.stringify(data))).toStrictEqual({
             _id: id,
             email: 'new@company1.com',
@@ -518,14 +518,28 @@ describe('Role: superadmin', () => {
               roles: ['admin']
             },
             roles: [],
+            authReset: expect.any(String),
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
             active: false,
             __v: 0,
             password: expect.any(String),
             deleted: false
-          })
-        );
+          });
+
+          const { token: invitationToken } = genereteChangePasswordToken(data, 'invitation');
+          return supertest(app)
+            .patch(`/auth/changePassword/${data.email}/${Buffer.from(invitationToken).toString('base64url')}`)
+            .send({ password: 'invited-password' })
+            .expect(200)
+            .then(() =>
+              supertest(app)
+                .post('/auth/login')
+                .send({ email: data.email, password: 'invited-password' })
+                .expect(200)
+                .then(response => expect(response.body.active).toBe(true))
+            );
+        });
     });
   });
 });
@@ -686,6 +700,7 @@ describe('Role: admin', () => {
               roles: ['admin']
             },
             roles: [],
+            authReset: expect.any(String),
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
             active: false,

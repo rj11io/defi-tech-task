@@ -19,12 +19,13 @@ const genereteAuthToken = user => ({
   )
 });
 
-const genereteChangePasswordToken = user => ({
+const genereteChangePasswordToken = (user, purpose = 'password-reset') => ({
   token: jwt.sign(
     {
       id: user._id.toString(),
       email: user.email,
-      authReset: user.authReset || null
+      authReset: user.authReset?.toISOString() || null,
+      purpose
     },
     secret(),
     { expiresIn: '1h' }

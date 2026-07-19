@@ -7,7 +7,7 @@
   --space-6: 24px;
   --space-8: 32px;
   --app-background: #f6f7f9;
-  --app-surface: #ffffff;
+  --app-surface: #fff;
   --app-border: #e4e7ec;
   --app-text: #18212f;
   --app-muted: #697386;
@@ -281,6 +281,10 @@ body {
   color: var(--app-muted);
 }
 
+.drawer-alert {
+  margin-bottom: var(--space-6);
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -365,7 +369,7 @@ body {
   margin-top: var(--space-3);
 }
 
-@media (max-width: 992px) {
+@media (width <= 992px) {
   .auth-shell {
     grid-template-columns: 1fr;
     gap: var(--space-8);
@@ -410,7 +414,7 @@ body {
   }
 }
 
-@media (max-width: 576px) {
+@media (width <= 576px) {
   .auth-shell {
     display: block;
     padding: var(--space-6) var(--space-4);
@@ -467,7 +471,6 @@ body {
 
   .page-heading > div,
   .page-heading > .ant-space,
-  .page-heading > .ant-space .ant-space-item:last-child,
   .page-heading > .ant-space .ant-picker,
   .page-heading > .ant-space .ant-btn {
     width: 100%;

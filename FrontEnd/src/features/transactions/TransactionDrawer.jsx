@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import dayjs from 'dayjs';
-import { Button, DatePicker, Drawer, Form, Input, InputNumber, Segmented, Select, Space } from 'antd';
+import { Alert, Button, DatePicker, Drawer, Form, Input, InputNumber, Segmented, Select, Space } from 'antd';
 
 import { CATEGORIES, TYPE_OPTIONS } from './constants';
 
-const TransactionDrawer = ({ open, entry, saving, onClose, onSave }) => {
+const TransactionDrawer = ({ open, entry, defaultDate, saving, saveError, onClose, onSave }) => {
   const [form] = Form.useForm();
   const editing = Boolean(entry);
 
@@ -24,10 +24,10 @@ const TransactionDrawer = ({ open, entry, saving, onClose, onSave }) => {
             category: undefined,
             description: '',
             note: '',
-            date: dayjs()
+            date: defaultDate || dayjs()
           }
     );
-  }, [entry, form, open]);
+  }, [defaultDate, entry, form, open]);
 
   const submit = values =>
     onSave({
@@ -36,6 +36,13 @@ const TransactionDrawer = ({ open, entry, saving, onClose, onSave }) => {
       date: values.date.toISOString(),
       note: values.note || ''
     });
+
+  const focusFirstError = ({ errorFields }) => {
+    const firstField = errorFields[0]?.name;
+    if (!firstField) return;
+    form.scrollToField(firstField, { behavior: 'smooth', block: 'center' });
+    requestAnimationFrame(() => form.getFieldInstance(firstField)?.focus?.());
+  };
 
   return (
     <Drawer
@@ -58,7 +65,17 @@ const TransactionDrawer = ({ open, entry, saving, onClose, onSave }) => {
       }
     >
       <p className="drawer-intro">Record money coming in or going out. All amounts are saved in euro.</p>
-      <Form form={form} layout="vertical" requiredMark={false} onFinish={submit} disabled={saving}>
+      {saveError && (
+        <Alert type="error" showIcon message="Entry not saved" description={saveError} className="drawer-alert" />
+      )}
+      <Form
+        form={form}
+        layout="vertical"
+        requiredMark={false}
+        onFinish={submit}
+        onFinishFailed={focusFirstError}
+        disabled={saving}
+      >
         <Form.Item name="type" label="Entry type" rules={[{ required: true, message: 'Choose an entry type' }]}>
           <Segmented block options={TYPE_OPTIONS} />
         </Form.Item>

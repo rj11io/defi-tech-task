@@ -139,6 +139,7 @@ exports.inviteUser = async ({ params: { id }, body }, { locals: { user } }, next
         roles,
         name: targetCompany.name
       },
+      authReset: new Date(),
       password
     }).save();
 

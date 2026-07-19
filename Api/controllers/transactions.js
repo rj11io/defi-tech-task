@@ -29,7 +29,6 @@ exports.list = async (req, res, next) => {
     const data = await Transaction.find(buildQuery(res.locals.user._id, req.query))
       .select(responseFields)
       .sort({ date: -1, createdAt: -1 })
-      .limit(500)
       .lean();
 
     return next(SendData(data));
