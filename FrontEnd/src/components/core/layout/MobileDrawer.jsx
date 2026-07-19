@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import { useContext, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Drawer, Button, Row, Col } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPowerOff } from '@fortawesome/free-solid-svg-icons';
@@ -12,6 +13,7 @@ import AuthContext from '../../../helpers/core/AuthContext';
 
 const MobileDrawer = props => {
   const { show, close } = props;
+  const { t } = useTranslation();
   const { logged, signOut } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -40,6 +42,7 @@ const MobileDrawer = props => {
             </Col>
             <Col flex="auto" className="text-right">
               <Button
+                aria-label={t('login.logout')}
                 type="primary"
                 shape="circle"
                 icon={<FontAwesomeIcon icon={faPowerOff} />}

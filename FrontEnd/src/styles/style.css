@@ -20,6 +20,10 @@ body {
   background: #f4f7fb;
 }
 
+.dark body {
+  background: #151e2b;
+}
+
 .ant-layout,
 .ant-layout-content {
   min-width: 0;

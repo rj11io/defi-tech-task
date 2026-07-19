@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import { useContext, useState } from 'react';
+import { cloneElement, useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Switch, Dropdown, Space } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -97,6 +97,7 @@ const UserDropdownButton = props => {
       open={open}
       onClick={() => setOpen(true)}
       icon={<FontAwesomeIcon icon={faAngleDown} />}
+      buttonsRender={buttons => [buttons[0], cloneElement(buttons[1], { 'aria-label': t('common.openMenu') })]}
     >
       <UserInfo user={logged} link={false} />
     </Dropdown.Button>

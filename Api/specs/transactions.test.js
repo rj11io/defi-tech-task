@@ -3,7 +3,7 @@ const app = require('../app');
 const db = require('../db/connect-test');
 const User = require('../models/user');
 const Transaction = require('../models/transaction');
-const { genereteAuthToken } = require('../helpers/auth');
+const { genereteAuthToken, genereteChangePasswordToken } = require('../helpers/auth');
 
 jest.mock('../helpers/secrets.js');
 
@@ -48,6 +48,16 @@ describe('Transactions CRUD', () => {
     const listed = await auth(agent.get('/transactions')).expect(200);
     expect(listed.body).toHaveLength(1);
     expect(listed.headers['x-total-count']).toBe('1');
+  });
+
+  test('preserves exact cent values and rejects reset tokens as access tokens', async () => {
+    const created = await auth(agent.post('/transactions'))
+      .send({ type: 'expense', amount: 0.29, description: 'Small fee', date: '2026-07-19' })
+      .expect(201);
+
+    expect(created.body.amount).toBe(0.29);
+    const resetToken = genereteChangePasswordToken(user).token;
+    await agent.get('/transactions').set('Cookie', `accessToken=${resetToken}`).expect(401);
   });
 
   test('updates and deletes only owned transactions', async () => {
@@ -107,5 +117,9 @@ describe('Transactions CRUD', () => {
     const response = await auth(agent.get('/transactions?type=income&search=client%20payment')).expect(200);
     expect(response.body).toHaveLength(1);
     expect(response.body[0].description).toBe('Client payment');
+  });
+
+  test('rejects contradictory date ranges', async () => {
+    await auth(agent.get('/transactions?from=2026-07-20&to=2026-07-01')).expect(400);
   });
 });

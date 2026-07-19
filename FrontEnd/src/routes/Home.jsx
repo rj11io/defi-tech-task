@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import {
   Alert,
@@ -15,9 +16,11 @@ import {
   Row,
   Select,
   Space,
+  Skeleton,
   Statistic,
   Table,
   Tag,
+  theme,
   Typography
 } from 'antd';
 import {
@@ -34,9 +37,10 @@ import Api from '../helpers/core/Api';
 import ContentPanel from '../components/core/layout/ContentPanel';
 
 const { Paragraph, Text, Title } = Typography;
-const currencyFormatter = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' });
+const PAGE_SIZE = 20;
 
-const formatAmount = (amount, type) => `${type === 'income' ? '+' : '-'}${currencyFormatter.format(amount)}`;
+const formatAmount = (amount, type, locale) =>
+  `${type === 'income' ? '+' : '-'}${new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(amount)}`;
 
 const emptyForm = {
   type: 'expense',
@@ -48,34 +52,57 @@ const emptyForm = {
 };
 
 const Home = () => {
+  const { t, i18n } = useTranslation();
   const { message, modal } = App.useApp();
+  const { token } = theme.useToken();
   const [form] = Form.useForm();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [formError, setFormError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [filterType, setFilterType] = useState('all');
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [summary, setSummary] = useState({ income: 0, expense: 0 });
+  const requestSequence = useRef(0);
+  const locale = i18n.language === 'it' ? 'it-IT' : 'en-IE';
 
-  const loadTransactions = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const response = await Api.get('/transactions');
-      setTransactions(response.data || []);
-    } catch (err) {
-      setError('We could not load your diary. Check the connection and try again.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const loadTransactions = useCallback(
+    async (requestedPage = page) => {
+      const sequence = requestSequence.current + 1;
+      requestSequence.current = sequence;
+      setLoading(true);
+      setError('');
+      try {
+        const params = { page: requestedPage, limit: PAGE_SIZE };
+        if (filterType !== 'all') params.type = filterType;
+        if (search.trim()) params.search = search.trim();
+        const response = await Api.get('/transactions', { params });
+        if (sequence !== requestSequence.current) return;
+        setTransactions(response.data || []);
+        setTotalCount(Number(response.headers['x-total-count'] || 0));
+        setSummary({
+          income: Number(response.headers['x-total-income'] || 0),
+          expense: Number(response.headers['x-total-expense'] || 0)
+        });
+      } catch (err) {
+        if (sequence !== requestSequence.current) return;
+        setError(t('diary.loadError'));
+      } finally {
+        if (sequence === requestSequence.current) setLoading(false);
+      }
+    },
+    [filterType, page, search, t]
+  );
 
   useEffect(() => {
-    loadTransactions();
-  }, [loadTransactions]);
+    loadTransactions(page);
+  }, [loadTransactions, page]);
 
   useEffect(() => {
     if (!modalOpen) return;
@@ -83,36 +110,19 @@ const Home = () => {
     else form.resetFields();
   }, [editingTransaction, form, modalOpen]);
 
-  const filteredTransactions = useMemo(() => {
-    const normalizedSearch = search.trim().toLowerCase();
-    return transactions.filter(transaction => {
-      const matchesType = filterType === 'all' || transaction.type === filterType;
-      const matchesSearch =
-        !normalizedSearch ||
-        `${transaction.description} ${transaction.category}`.toLowerCase().includes(normalizedSearch);
-      return matchesType && matchesSearch;
-    });
-  }, [filterType, search, transactions]);
-
-  const totals = useMemo(() => {
-    const income = transactions
-      .filter(transaction => transaction.type === 'income')
-      .reduce((sum, transaction) => sum + transaction.amount, 0);
-    const expenses = transactions
-      .filter(transaction => transaction.type === 'expense')
-      .reduce((sum, transaction) => sum + transaction.amount, 0);
-    return { income, expenses, balance: income - expenses };
-  }, [transactions]);
+  const totals = { income: summary.income, expenses: summary.expense, balance: summary.income - summary.expense };
 
   const openCreate = () => {
     setEditingId(null);
     setEditingTransaction(null);
+    setFormError('');
     setModalOpen(true);
   };
 
   const openEdit = transaction => {
     setEditingId(transaction._id);
     setEditingTransaction(transaction);
+    setFormError('');
     setModalOpen(true);
   };
 
@@ -120,19 +130,22 @@ const Home = () => {
     if (saving) return;
     setModalOpen(false);
     form.resetFields();
+    setFormError('');
   };
 
   const saveTransaction = async values => {
     setSaving(true);
     try {
-      const payload = { ...values, date: values.date.toISOString() };
+      const payload = { ...values, date: values.date.format('YYYY-MM-DD') };
       if (editingId) await Api.patch(`/transactions/${editingId}`, payload);
       else await Api.post('/transactions', payload);
-      message.success(editingId ? 'Entry updated' : 'Entry added');
+      message.success(editingId ? t('diary.entryUpdated') : t('diary.entryAdded'));
       closeModal();
-      await loadTransactions();
+      const nextPage = editingId ? page : 1;
+      if (!editingId) setPage(1);
+      await loadTransactions(nextPage);
     } catch (err) {
-      setError('The entry could not be saved. Please review it and try again.');
+      setFormError(t('diary.saveError'));
     } finally {
       setSaving(false);
     }
@@ -141,10 +154,10 @@ const Home = () => {
   const deleteTransaction = async id => {
     try {
       await Api.delete(`/transactions/${id}`);
-      message.success('Entry deleted');
-      await loadTransactions();
+      message.success(t('diary.entryDeleted'));
+      await loadTransactions(page);
     } catch (err) {
-      setError('The entry could not be deleted. Please try again.');
+      setError(t('diary.deleteError'));
     }
   };
 
@@ -154,7 +167,7 @@ const Home = () => {
       dataIndex: 'date',
       key: 'date',
       width: 140,
-      render: date => dayjs(date).locale('en').format('DD MMM YYYY')
+      render: date => dayjs(date).locale(i18n.language).format('DD MMM YYYY')
     },
     {
       title: 'Description',
@@ -177,7 +190,7 @@ const Home = () => {
           icon={type === 'income' ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
           color={type === 'income' ? 'success' : 'error'}
         >
-          {type === 'income' ? 'Income' : 'Expense'}
+          {type === 'income' ? t('diary.income') : t('diary.expense')}
         </Tag>
       )
     },
@@ -189,7 +202,7 @@ const Home = () => {
       width: 140,
       render: (amount, record) => (
         <Text strong type={record.type === 'income' ? 'success' : 'danger'}>
-          {formatAmount(amount, record.type)}
+          {formatAmount(amount, record.type, locale)}
         </Text>
       )
     },
@@ -213,11 +226,11 @@ const Home = () => {
             icon={<DeleteOutlined />}
             onClick={() =>
               modal.confirm({
-                title: 'Delete this entry?',
-                content: 'This action cannot be undone.',
-                okText: 'Delete',
+                title: t('diary.deleteTitle'),
+                content: t('diary.deleteDescription'),
+                okText: t('diary.delete'),
                 okButtonProps: { danger: true },
-                cancelText: 'Keep entry',
+                cancelText: t('diary.keepEntry'),
                 onOk: () => deleteTransaction(record._id)
               })
             }
@@ -229,11 +242,11 @@ const Home = () => {
 
   return (
     <ContentPanel
-      title="Money diary"
-      subtitle="A clear view of what came in, what went out, and where your month is heading."
+      title={t('diary.title')}
+      subtitle={t('diary.subtitle')}
       titleAction={
         <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
-          Add entry
+          {t('diary.addEntry')}
         </Button>
       }
       loading={false}
@@ -247,7 +260,7 @@ const Home = () => {
             message={error}
             action={
               <Button size="small" icon={<ReloadOutlined />} onClick={loadTransactions}>
-                Retry
+                {t('diary.retry')}
               </Button>
             }
             closable
@@ -259,39 +272,47 @@ const Home = () => {
           <Col xs={24} sm={8}>
             <Card bordered={false} className="diary-stat-card">
               <Statistic
-                title="Balance"
-                value={totals.balance}
+                title={t('diary.balance')}
+                value={loading ? 0 : totals.balance}
                 precision={2}
                 prefix="€"
-                valueStyle={{ color: totals.balance >= 0 ? undefined : '#cf1322' }}
+                valueStyle={{ color: totals.balance >= 0 ? undefined : token.colorError }}
               />
-              <Text type="secondary">Income less expenses</Text>
+              {loading ? (
+                <Skeleton.Input active size="small" />
+              ) : (
+                <Text type="secondary">{t('diary.balanceHint')}</Text>
+              )}
             </Card>
           </Col>
           <Col xs={24} sm={8}>
             <Card bordered={false} className="diary-stat-card">
               <Statistic
-                title="Income"
-                value={totals.income}
+                title={t('diary.income')}
+                value={loading ? 0 : totals.income}
                 precision={2}
                 prefix={<ArrowUpOutlined />}
                 suffix="€"
-                valueStyle={{ color: '#389e0d' }}
+                valueStyle={{ color: token.colorSuccess }}
               />
-              <Text type="secondary">Total received</Text>
+              {loading ? <Skeleton.Input active size="small" /> : <Text type="secondary">{t('diary.incomeHint')}</Text>}
             </Card>
           </Col>
           <Col xs={24} sm={8}>
             <Card bordered={false} className="diary-stat-card">
               <Statistic
-                title="Expenses"
-                value={totals.expenses}
+                title={t('diary.expenses')}
+                value={loading ? 0 : totals.expenses}
                 precision={2}
                 prefix={<ArrowDownOutlined />}
                 suffix="€"
-                valueStyle={{ color: '#cf1322' }}
+                valueStyle={{ color: token.colorError }}
               />
-              <Text type="secondary">Total spent</Text>
+              {loading ? (
+                <Skeleton.Input active size="small" />
+              ) : (
+                <Text type="secondary">{t('diary.expensesHint')}</Text>
+              )}
             </Card>
           </Col>
         </Row>
@@ -302,12 +323,10 @@ const Home = () => {
           title={
             <div>
               <Title level={4} className="diary-section-title">
-                Recent entries
+                {t('diary.recentEntries')}
               </Title>
               <Paragraph type="secondary" className="diary-section-subtitle">
-                {transactions.length
-                  ? `${transactions.length} ${transactions.length === 1 ? 'entry' : 'entries'} in your diary`
-                  : 'Your saved entries will appear here'}
+                {totalCount ? t('diary.entriesCount', { count: totalCount }) : t('diary.savedEntries')}
               </Paragraph>
             </div>
           }
@@ -315,20 +334,26 @@ const Home = () => {
             <Space wrap>
               <Input
                 allowClear
-                aria-label="Search entries"
+                aria-label={t('diary.search')}
                 prefix={<SearchOutlined />}
-                placeholder="Search entries"
+                placeholder={t('diary.search')}
                 value={search}
-                onChange={event => setSearch(event.target.value)}
+                onChange={event => {
+                  setSearch(event.target.value);
+                  setPage(1);
+                }}
               />
               <Select
-                aria-label="Filter by type"
+                aria-label={t('diary.filterByType')}
                 value={filterType}
-                onChange={setFilterType}
+                onChange={value => {
+                  setFilterType(value);
+                  setPage(1);
+                }}
                 options={[
-                  { value: 'all', label: 'All types' },
-                  { value: 'income', label: 'Income' },
-                  { value: 'expense', label: 'Expenses' }
+                  { value: 'all', label: t('diary.allTypes') },
+                  { value: 'income', label: t('diary.income') },
+                  { value: 'expense', label: t('diary.expenses') }
                 ]}
               />
             </Space>
@@ -338,18 +363,25 @@ const Home = () => {
             rowKey="_id"
             loading={loading}
             columns={columns}
-            dataSource={filteredTransactions}
-            pagination={{ pageSize: 8, hideOnSinglePage: true, showSizeChanger: false }}
+            dataSource={transactions}
+            pagination={{
+              current: page,
+              pageSize: PAGE_SIZE,
+              total: totalCount,
+              hideOnSinglePage: true,
+              showSizeChanger: false,
+              onChange: setPage
+            }}
             scroll={{ x: 720 }}
             locale={{
               emptyText: loading ? undefined : (
                 <Empty
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description={transactions.length ? 'No entries match these filters' : 'No entries yet'}
+                  description={totalCount ? t('diary.noMatching') : t('diary.noEntries')}
                 >
-                  {!transactions.length && (
+                  {!totalCount && (
                     <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
-                      Add your first entry
+                      {t('diary.addFirst')}
                     </Button>
                   )}
                 </Empty>
@@ -359,13 +391,23 @@ const Home = () => {
         </Card>
 
         <Modal
-          title={editingId ? 'Edit entry' : 'Add entry'}
+          title={editingId ? t('diary.editEntry') : t('diary.addEntry')}
           open={modalOpen}
           onCancel={closeModal}
           destroyOnClose
           footer={null}
           width={560}
         >
+          {formError && (
+            <Alert
+              className="diary-form-alert"
+              type="error"
+              showIcon
+              message={formError}
+              closable
+              onClose={() => setFormError('')}
+            />
+          )}
           <Form
             form={form}
             layout="vertical"
@@ -373,22 +415,26 @@ const Home = () => {
             onFinish={saveTransaction}
             className="diary-form"
           >
-            <Form.Item label="Type" name="type" rules={[{ required: true, message: 'Choose income or expense' }]}>
+            <Form.Item
+              label={t('diary.type')}
+              name="type"
+              rules={[{ required: true, message: t('diary.typeRequired') }]}
+            >
               <Select
                 options={[
-                  { value: 'expense', label: 'Expense' },
-                  { value: 'income', label: 'Income' }
+                  { value: 'expense', label: t('diary.expense') },
+                  { value: 'income', label: t('diary.income') }
                 ]}
               />
             </Form.Item>
             <Row gutter={16}>
               <Col xs={24} sm={12}>
                 <Form.Item
-                  label="Amount"
+                  label={t('diary.amount')}
                   name="amount"
                   rules={[
-                    { required: true, message: 'Enter an amount' },
-                    { type: 'number', min: 0.01, message: 'Amount must be greater than zero' }
+                    { required: true, message: t('diary.amountRequired') },
+                    { type: 'number', min: 0.01, message: t('diary.amountPositive') }
                   ]}
                 >
                   <InputNumber
@@ -402,31 +448,35 @@ const Home = () => {
                 </Form.Item>
               </Col>
               <Col xs={24} sm={12}>
-                <Form.Item label="Date" name="date" rules={[{ required: true, message: 'Choose a date' }]}>
+                <Form.Item
+                  label={t('diary.date')}
+                  name="date"
+                  rules={[{ required: true, message: t('diary.dateRequired') }]}
+                >
                   <DatePicker className="w-full" format="DD MMM YYYY" inputReadOnly={false} />
                 </Form.Item>
               </Col>
             </Row>
             <Form.Item
-              label="Description"
+              label={t('diary.description')}
               name="description"
-              rules={[{ required: true, whitespace: true, max: 160, message: 'Add a short description' }]}
+              rules={[{ required: true, whitespace: true, max: 160, message: t('diary.descriptionRequired') }]}
             >
               <Input placeholder="e.g. Groceries, salary, rent" maxLength={160} />
             </Form.Item>
             <Form.Item
-              label="Category"
+              label={t('diary.category')}
               name="category"
-              rules={[{ required: true, whitespace: true, max: 64, message: 'Add a category' }]}
+              rules={[{ required: true, whitespace: true, max: 64, message: t('diary.categoryRequired') }]}
             >
               <Input placeholder="e.g. Food, Housing, Work" maxLength={64} />
             </Form.Item>
             <div className="diary-form-footer">
               <Button onClick={closeModal} disabled={saving}>
-                Cancel
+                {t('diary.cancel')}
               </Button>
               <Button type="primary" htmlType="submit" loading={saving}>
-                {editingId ? 'Save changes' : 'Save entry'}
+                {editingId ? t('diary.saveChanges') : t('diary.saveEntry')}
               </Button>
             </div>
           </Form>

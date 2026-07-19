@@ -1,7 +1,16 @@
 const Transaction = require('../models/transaction');
-const { SendData, ServerError, NotFound } = require('../helpers/response');
+const { SendData, ServerError, NotFound, ValidationError } = require('../helpers/response');
 
-const toCents = amount => Math.round(Number(amount) * 100);
+const toCents = amount => {
+  const normalized = String(amount);
+  if (!/^\d+(?:\.\d{1,2})?$/.test(normalized)) throw new Error('Invalid amount');
+  const [units, decimal = ''] = normalized.split('.');
+  const cents = Number(`${units}${decimal.padEnd(2, '0')}`);
+  if (!Number.isSafeInteger(cents) || cents < 1) throw new Error('Invalid amount');
+  return cents;
+};
+
+const normalizeDate = date => (/^\d{4}-\d{2}-\d{2}$/.test(date) ? `${date}T00:00:00.000Z` : date);
 
 const serialize = transaction => ({
   _id: transaction._id.toString(),
@@ -9,7 +18,7 @@ const serialize = transaction => ({
   amount: transaction.amountCents / 100,
   description: transaction.description,
   category: transaction.category,
-  date: transaction.date.toISOString(),
+  date: transaction.date.toISOString().slice(0, 10),
   currency: transaction.currency,
   createdAt: transaction.createdAt.toISOString(),
   updatedAt: transaction.updatedAt.toISOString()
@@ -20,7 +29,7 @@ const createValues = body => ({
   amountCents: toCents(body.amount),
   description: body.description,
   category: body.category || 'Other',
-  date: body.date,
+  date: normalizeDate(body.date),
   currency: (body.currency || 'EUR').toUpperCase()
 });
 
@@ -30,6 +39,7 @@ const updateValues = body => {
     values.amountCents = toCents(values.amount);
     delete values.amount;
   }
+  if (values.date) values.date = normalizeDate(values.date);
   if (values.currency) values.currency = values.currency.toUpperCase();
   return values;
 };
@@ -51,13 +61,20 @@ exports.get = async (req, res, next) => {
   try {
     const { page = 1, limit = 100 } = req.query;
     const filter = queryForUser(req.user._id, req.query);
+    if (req.query.from && req.query.to && new Date(req.query.from) > new Date(req.query.to))
+      return next(ValidationError('/to'));
     const skip = (page - 1) * limit;
-    const [transactions, total] = await Promise.all([
+    const [transactions, total, totals] = await Promise.all([
       Transaction.find(filter).sort({ date: -1, createdAt: -1 }).skip(skip).limit(limit),
-      Transaction.countDocuments(filter)
+      Transaction.countDocuments(filter),
+      Transaction.aggregate([{ $match: filter }, { $group: { _id: '$type', amountCents: { $sum: '$amountCents' } } }])
     ]);
 
+    const totalsByType = totals.reduce((acc, item) => ({ ...acc, [item._id]: item.amountCents / 100 }), {});
+
     res.set('x-total-count', total.toString());
+    res.set('x-total-income', (totalsByType.income || 0).toString());
+    res.set('x-total-expense', (totalsByType.expense || 0).toString());
     res.set('x-page', page.toString());
     res.set('x-page-size', limit.toString());
     return next(SendData(transactions.map(serialize)));
@@ -80,6 +97,7 @@ exports.create = async (req, res, next) => {
     const transaction = await new Transaction({ user: req.user._id, ...createValues(req.body) }).save();
     return next(SendData(serialize(transaction), 201));
   } catch (err) {
+    if (err.message === 'Invalid amount') return next(ValidationError('/amount'));
     return next(ServerError(err));
   }
 };
@@ -93,6 +111,7 @@ exports.update = async (req, res, next) => {
     );
     return transaction ? next(SendData(serialize(transaction))) : next(NotFound());
   } catch (err) {
+    if (err.message === 'Invalid amount') return next(ValidationError('/amount'));
     return next(ServerError(err));
   }
 };

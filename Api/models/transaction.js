@@ -19,7 +19,12 @@ const schema = Schema(
     amountCents: {
       type: Number,
       required: true,
-      min: 1
+      min: 1,
+      max: 99999999999999,
+      validate: {
+        validator: Number.isSafeInteger,
+        message: 'Amount must be a safe integer number of cents'
+      }
     },
     description: {
       type: String,
@@ -42,6 +47,7 @@ const schema = Schema(
       type: String,
       uppercase: true,
       trim: true,
+      enum: ['EUR'],
       minlength: 3,
       maxlength: 3,
       default: 'EUR'

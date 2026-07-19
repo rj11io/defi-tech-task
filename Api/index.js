@@ -11,6 +11,10 @@ if (process.env.ENV === 'dev' && fs.existsSync(path.resolve(__dirname, '.env.dev
   dotenv.config();
 }
 
+['JWT_SECRET', 'CHANGE_PASSWORD_SECRET'].forEach(name => {
+  if (!process.env[name]) throw new Error(`${name} is required`);
+});
+
 const app = require('./app');
 
 // Connect to the configured MongoDB instance before accepting requests.
