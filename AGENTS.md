@@ -1,0 +1,9 @@
+Your job is to execute the task in the root README to the best of your ability and to a very high degree of quality, use the local project skills to help you if needed.
+
+Make an effort to build a coesive and well-structured layout using Ant Design components, prioritize design and styling through the Ant Design theme before hardcoding any styles.
+
+When you are done with the task to a very high degree of satisfaction, do a polishing pass across code-quality, bugfixing, ui, ux, performance, security, metadata and documentation.
+
+When writing documentation at any point should never edit original files and READMEs, opt instead to generate a new files and folder in the `rj11io` directory, make an effort to keep everything structured.
+
+After the polishing run open a PR, then spawn 3 sub-agents to do an adversarial and challenging review of your work. One sub-agent for each focus of technical implementation, code quality, ui ux design, on top of a general review. Reason with each sub-agent until you both agree on the best result for the project. Value quality over quantity always. Write the final reviews a PR comments, then proceed to implement the fixes. Do not merge the PR.
