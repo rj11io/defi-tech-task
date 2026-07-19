@@ -1,0 +1,4 @@
+interface:
+  display_name: "11ai Super Security"
+  short_description: "Audit, fix, and harden project security continuously"
+  default_prompt: "Use $11ai-super-security to audit this project, fix its critical and high-severity security issues, and summarize the session."

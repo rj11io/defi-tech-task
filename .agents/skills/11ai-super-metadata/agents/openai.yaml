@@ -1,0 +1,4 @@
+interface:
+  display_name: "11ai Super Metadata"
+  short_description: "Audit, fix, and improve project SEO metadata"
+  default_prompt: "Use $11ai-super-metadata to audit and fix the project's metadata and SEO, generate needed OG images, and iterate to a verified high-quality result."

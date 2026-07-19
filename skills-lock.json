@@ -1,0 +1,539 @@
+{
+  "version": 1,
+  "skills": {
+    "11ai-antdesign-cheatsheet": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-antdesign-operations/skills/11ai-antdesign-cheatsheet/SKILL.md",
+      "computedHash": "a8e151e0ccea7a8fc34c07db50c459dbe0a0a8e5a44e5a9687a92cd23d52793f"
+    },
+    "11ai-antdesign-data-display": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-antdesign-operations/skills/11ai-antdesign-data-display/SKILL.md",
+      "computedHash": "35458d030565eb101846f8a9eb479ecc8f350339013f50eb9c917a4c5339ad24"
+    },
+    "11ai-antdesign-forms": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-antdesign-operations/skills/11ai-antdesign-forms/SKILL.md",
+      "computedHash": "2573db801f61b05dc9a886a714a952d40e21e159e7b4ee5215e7cb89284b6fcc"
+    },
+    "11ai-antdesign-layout": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-antdesign-operations/skills/11ai-antdesign-layout/SKILL.md",
+      "computedHash": "2493b47568a6ccc265a68e9900a0e28e041a9a08a7a135c6dd1ac8152e715024"
+    },
+    "11ai-antdesign-navigation": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-antdesign-operations/skills/11ai-antdesign-navigation/SKILL.md",
+      "computedHash": "1352e8b642a4dd033c5ac5d7ee8ee46fcf13c32cbe900c23ca218e4f0441699e"
+    },
+    "11ai-antdesign-overlays": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-antdesign-operations/skills/11ai-antdesign-overlays/SKILL.md",
+      "computedHash": "8e1358a095766d6ab897a3cad1cd9bac5a01b903c5859271efe11339482cef8a"
+    },
+    "11ai-antdesign-setup": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-antdesign-operations/skills/11ai-antdesign-setup/SKILL.md",
+      "computedHash": "639f1cd8dec3ae2402f63ac3b624e958f0f0bf4971ad62c903c045a5c0b06273"
+    },
+    "11ai-antdesign-tables": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-antdesign-operations/skills/11ai-antdesign-tables/SKILL.md",
+      "computedHash": "6d02936deae2ecce498657ee7320d7f2bda90c0ca56e6df46752fbd5f4147a08"
+    },
+    "11ai-antdesign-theming": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-antdesign-operations/skills/11ai-antdesign-theming/SKILL.md",
+      "computedHash": "7883830dfddb4d0d2e670dae24bf8940f99d5f110cea224544892a7207bc8b91"
+    },
+    "11ai-antdesign-troubleshooting": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-antdesign-operations/skills/11ai-antdesign-troubleshooting/SKILL.md",
+      "computedHash": "429bc4fe129f13a198c9ae42ac40f22db066b248ea6ca9fb9c3e54545fbc4d01"
+    },
+    "11ai-automated-releases": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-codebase/skills/11ai-automated-releases/SKILL.md",
+      "computedHash": "ff120a3bb9cc4113ec0c104281c6d0e49ae41361f404a30a0affe4e5d8b8fe4e"
+    },
+    "11ai-aws-cheatsheet": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-aws-operations/skills/11ai-aws-cheatsheet/SKILL.md",
+      "computedHash": "234a6a4db507bdbd41bcc7e87730df36aed6f3b59dafff6b1eda0118cab4aaf7"
+    },
+    "11ai-aws-cloudformation": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-aws-operations/skills/11ai-aws-cloudformation/SKILL.md",
+      "computedHash": "470aadbdd18953fb850e00b89be0bfb3f2957f134643bc990dda8bd4148066ed"
+    },
+    "11ai-aws-cloudwatch": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-aws-operations/skills/11ai-aws-cloudwatch/SKILL.md",
+      "computedHash": "d20b416f6866ad8fdd6988bd29aa8d9c9546eea669605875c055178946390043"
+    },
+    "11ai-aws-ec2": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-aws-operations/skills/11ai-aws-ec2/SKILL.md",
+      "computedHash": "a44e7d394a869eaeca8c9f87ef93e569ce8199ad2cd1482363b6c24339098449"
+    },
+    "11ai-aws-ecr": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-aws-operations/skills/11ai-aws-ecr/SKILL.md",
+      "computedHash": "30fe7a07dea458b02aed89f49dc3f5c97b5f29e1c3ed515cdb1a9c245a804466"
+    },
+    "11ai-aws-ecs": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-aws-operations/skills/11ai-aws-ecs/SKILL.md",
+      "computedHash": "fa7eea5d10efa5cb013442c9f059aed7b458bbee2dc10018946832414575ffbb"
+    },
+    "11ai-aws-environment": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-aws-operations/skills/11ai-aws-environment/SKILL.md",
+      "computedHash": "0de0856d761a2d88547e68756711297766a1fd69e54f6d6889c2f61b23ed3cc7"
+    },
+    "11ai-aws-iam": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-aws-operations/skills/11ai-aws-iam/SKILL.md",
+      "computedHash": "593aa5089bc55b7fd5d873107781e5ab6c82c77caca34b36e8a4f829752d70ee"
+    },
+    "11ai-aws-lambda": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-aws-operations/skills/11ai-aws-lambda/SKILL.md",
+      "computedHash": "8e8f7ef6f71b54ab4354bd4ede30f1c1f40221fd219664b41658fb7af556c8f7"
+    },
+    "11ai-aws-s3": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-aws-operations/skills/11ai-aws-s3/SKILL.md",
+      "computedHash": "e10f747f642fbf3e0408d9a374e5e0184ff03ba4217c1a0cc1a70225c2e2dce9"
+    },
+    "11ai-aws-troubleshooting": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-aws-operations/skills/11ai-aws-troubleshooting/SKILL.md",
+      "computedHash": "17163d430e940654aad3be5d8e8c5cd756ba14546facb53e412104883618bf54"
+    },
+    "11ai-code-quality": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-utils/skills/11ai-code-quality/SKILL.md",
+      "computedHash": "265e31d57a73e533c4b22df3241382b608cbdb3dad0e9b6274194166fe60edab"
+    },
+    "11ai-docker-build": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-docker-operations/skills/11ai-docker-build/SKILL.md",
+      "computedHash": "32fdf1587a822eb87aded7108d45ce8278a47037ffaae1c2d861dce9b75ab5f1"
+    },
+    "11ai-docker-cheatsheet": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-docker-operations/skills/11ai-docker-cheatsheet/SKILL.md",
+      "computedHash": "0a47d7a1e41b0ca2e7cdf750a6047e8c69cb563d7f7523957593962b58a20ad6"
+    },
+    "11ai-docker-cleanup": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-docker-operations/skills/11ai-docker-cleanup/SKILL.md",
+      "computedHash": "7b0c76d00ae27d13440947787785de13db151063856b7a6d16d9b19168287656"
+    },
+    "11ai-docker-compose": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-docker-operations/skills/11ai-docker-compose/SKILL.md",
+      "computedHash": "fbf1eb3a0f9ac3a38492dabf5725236361680ce824896f9e91ecc0bc372ace22"
+    },
+    "11ai-docker-containers": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-docker-operations/skills/11ai-docker-containers/SKILL.md",
+      "computedHash": "3ea1157ec103e14ab68b924e4b960b7d8bdacfeed1f1aaef5fa8ef3a0daf9604"
+    },
+    "11ai-docker-environment": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-docker-operations/skills/11ai-docker-environment/SKILL.md",
+      "computedHash": "88e67565a5b2b94dde9e1337840b40c3c0859ab10e34990f655fdf34661b83eb"
+    },
+    "11ai-docker-images": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-docker-operations/skills/11ai-docker-images/SKILL.md",
+      "computedHash": "afcce05d2a309ec9bf39673794a4a8c697718458d262d16dea45fcb378ed88cf"
+    },
+    "11ai-docker-registry": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-docker-operations/skills/11ai-docker-registry/SKILL.md",
+      "computedHash": "d479d923cb23d656928e5edd8da81050ea8e7223b2eade7baa4b3e301debc48d"
+    },
+    "11ai-docker-troubleshooting": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-docker-operations/skills/11ai-docker-troubleshooting/SKILL.md",
+      "computedHash": "2e8c1beadb33a55ab4785ed52d9bf7f5c70ef31c3426a8fbff84f7b008fe203e"
+    },
+    "11ai-docker-volumes-and-networks": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-docker-operations/skills/11ai-docker-volumes-and-networks/SKILL.md",
+      "computedHash": "7ef4f7552046ccce39a0528e9c4c06f4452db3d6e8bd64e10c26e99b9eb275f9"
+    },
+    "11ai-git-branch-operator": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-git-operations/skills/11ai-git-branch-operator/SKILL.md",
+      "computedHash": "46335cbb6638dba93f0ce68823f48f67a5230e2f6dd21a448f812dfd3c882c0f"
+    },
+    "11ai-git-branches": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-git-operations/skills/11ai-git-branches/SKILL.md",
+      "computedHash": "36a751bebedbf20812476cfdc0eed761a3413345d382866f3ce82dd9e98bcbef"
+    },
+    "11ai-git-cheatsheet": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-git-operations/skills/11ai-git-cheatsheet/SKILL.md",
+      "computedHash": "65db01947787c37fea99cc88e3fd63aacda03d14ea9903eb5f6d84bc231db859"
+    },
+    "11ai-git-commit": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-git-operations/skills/11ai-git-commit/SKILL.md",
+      "computedHash": "eef38caac0ab04061d8d38182bfc974eaf895570696e4fda2de6ff97641f4dcf"
+    },
+    "11ai-git-conventional-commits": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-git-operations/skills/11ai-git-conventional-commits/SKILL.md",
+      "computedHash": "5a639b840e64b0ce9e97b5886de1a4cd99c6ec83bef48bd2a030fdcf1749f1c9"
+    },
+    "11ai-git-main-operator": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-git-operations/skills/11ai-git-main-operator/SKILL.md",
+      "computedHash": "4eed3730c24157e6dfb2eb04f649774c6684cdefee58a640ef9f2fd49b3a2195"
+    },
+    "11ai-git-recovery": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-git-operations/skills/11ai-git-recovery/SKILL.md",
+      "computedHash": "c2bb101a0567160a2230b9955ac1a552864d6b214faff738a834f2e75ed64257"
+    },
+    "11ai-git-stage": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-git-operations/skills/11ai-git-stage/SKILL.md",
+      "computedHash": "1ae5cb791d46cb282e43ea76dda542c0cd2d8e173623c7d0ffb5d9eacb8d9ada"
+    },
+    "11ai-git-stash": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-git-operations/skills/11ai-git-stash/SKILL.md",
+      "computedHash": "ca689cd9599a03aa2c251121b98c6385fd0009baea93c6025ca68f7f40303978"
+    },
+    "11ai-git-status": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-git-operations/skills/11ai-git-status/SKILL.md",
+      "computedHash": "d8541bdb27393b4f57e10e55528ae844885581802bcc1dca2bcda06c0bf9e0db"
+    },
+    "11ai-git-sync": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-git-operations/skills/11ai-git-sync/SKILL.md",
+      "computedHash": "5c11c9137a4628af63ccea3f559c733f5f46aaa34bcce300f38e0fafa71193c0"
+    },
+    "11ai-git-troubleshooting": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-git-operations/skills/11ai-git-troubleshooting/SKILL.md",
+      "computedHash": "96fbf122770edc54ff1cc6dfb60a236367d92f33a4e1cbafe8337ed10b81d118"
+    },
+    "11ai-jest-async": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-jest-operations/skills/11ai-jest-async/SKILL.md",
+      "computedHash": "b386df68836ad6d6419356c06ace5adfb29be68b14466564a9884b97d07f4e26"
+    },
+    "11ai-jest-cheatsheet": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-jest-operations/skills/11ai-jest-cheatsheet/SKILL.md",
+      "computedHash": "38f810b257629ca80bb050defc434de984061958c3a95a4f4b7d056c56e97239"
+    },
+    "11ai-jest-ci": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-jest-operations/skills/11ai-jest-ci/SKILL.md",
+      "computedHash": "6bcfac64397df7e698bb696475ce0eb201e4f96aa3b54834ba3c2434d4c5d6ac"
+    },
+    "11ai-jest-config": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-jest-operations/skills/11ai-jest-config/SKILL.md",
+      "computedHash": "c5fb588ec1bf9bec81cf4bfd31d0505c598ed0c9e36945b422738faf82c66e33"
+    },
+    "11ai-jest-coverage": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-jest-operations/skills/11ai-jest-coverage/SKILL.md",
+      "computedHash": "29c49b849fa8ba5151732e1cd8c3e5963075a1b45d345c39785ff45742ac5a4d"
+    },
+    "11ai-jest-environment": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-jest-operations/skills/11ai-jest-environment/SKILL.md",
+      "computedHash": "b1d040d256a3e406126c2a3eb3f3e60e6499fe07466398f06517b4eef6ed361c"
+    },
+    "11ai-jest-mocks": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-jest-operations/skills/11ai-jest-mocks/SKILL.md",
+      "computedHash": "af4d43f9bbb94b3fdc947c0917e8b7f724adffbb694a71635ceb2c7d069efe13"
+    },
+    "11ai-jest-runner": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-jest-operations/skills/11ai-jest-runner/SKILL.md",
+      "computedHash": "981049239383457aeb3c75e8ddb7acecd1f9c4457d6feff0db8469bea67f2f3b"
+    },
+    "11ai-jest-snapshots": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-jest-operations/skills/11ai-jest-snapshots/SKILL.md",
+      "computedHash": "0245dff283b77dda298d98f56ce59800c6a3e1b61a47088e8cab5648baa95851"
+    },
+    "11ai-jest-timers": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-jest-operations/skills/11ai-jest-timers/SKILL.md",
+      "computedHash": "439f3b5c84b4daf26248b7ba9a6b3539676502316eb0c052a282d33f99392f63"
+    },
+    "11ai-jest-troubleshooting": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-jest-operations/skills/11ai-jest-troubleshooting/SKILL.md",
+      "computedHash": "428bf9edc49cd1033ba1d960eb8fa7fb4ffc9ebcf0e84ea74c8c136ea61435de"
+    },
+    "11ai-jest-watch": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-jest-operations/skills/11ai-jest-watch/SKILL.md",
+      "computedHash": "5757959bf9d314eae6c8c53ed9f97a16361fd505a35b4ed14f0380eeb3cfa504"
+    },
+    "11ai-llm-cost-global": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-llm-costs/skills/11ai-llm-cost-global/SKILL.md",
+      "computedHash": "ecd301f0b2df915645f788563a846fed9a8c237126cfcd56a14d20fa9b66ca47"
+    },
+    "11ai-llm-cost-project": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-llm-costs/skills/11ai-llm-cost-project/SKILL.md",
+      "computedHash": "80fd9f69b584bc1bbb5e62d2e1bfa4d72cef10388b014abe83a554d4f6a792bf"
+    },
+    "11ai-llm-cost-single-thread": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-llm-costs/skills/11ai-llm-cost-single-thread/SKILL.md",
+      "computedHash": "f321078a0844fca189ab527066ef66df11a4a2e319d45c697282a64af0611081"
+    },
+    "11ai-mongodb-aggregation": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-mongodb-operations/skills/11ai-mongodb-aggregation/SKILL.md",
+      "computedHash": "85c157139a9813734887f0fa6a4b612defb76ec877ce87e19a8c8ee39101536e"
+    },
+    "11ai-mongodb-cheatsheet": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-mongodb-operations/skills/11ai-mongodb-cheatsheet/SKILL.md",
+      "computedHash": "f8983e87a973fcd43d80b408baa07437a60436ccb2d6384bdc5c086f5faf8a12"
+    },
+    "11ai-mongodb-collections": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-mongodb-operations/skills/11ai-mongodb-collections/SKILL.md",
+      "computedHash": "b76fba39036b16186fb209fb790307f081fb8060e6d2e9c108d47a5863e07d1e"
+    },
+    "11ai-mongodb-crud": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-mongodb-operations/skills/11ai-mongodb-crud/SKILL.md",
+      "computedHash": "30d8dc8a9913da8c977cd77b764269518189571d5d5b3739928e6870d8581b58"
+    },
+    "11ai-mongodb-databases": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-mongodb-operations/skills/11ai-mongodb-databases/SKILL.md",
+      "computedHash": "7e95509bca110a2ceddf080b271d6f4441efe2459c363e885df85b3868465607"
+    },
+    "11ai-mongodb-environment": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-mongodb-operations/skills/11ai-mongodb-environment/SKILL.md",
+      "computedHash": "399795ae6bb548edecf7b5ff3431c73f7e85ed7673c26c9a2bba34e928c62172"
+    },
+    "11ai-mongodb-import-export": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-mongodb-operations/skills/11ai-mongodb-import-export/SKILL.md",
+      "computedHash": "40f1c5d2d2faa3867f412c80d30bd4719942cfeeb71e4d0f266acae4ab0b95a1"
+    },
+    "11ai-mongodb-indexes": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-mongodb-operations/skills/11ai-mongodb-indexes/SKILL.md",
+      "computedHash": "63bd8b2c195a37604a265e7343959576b9ef44d55072fe3791235114f37cd350"
+    },
+    "11ai-mongodb-querying": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-mongodb-operations/skills/11ai-mongodb-querying/SKILL.md",
+      "computedHash": "566e1fdc7085cd89bde765e99cb0c9c7d670ab73b253b0d6a592399b9865d524"
+    },
+    "11ai-mongodb-troubleshooting": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-mongodb-operations/skills/11ai-mongodb-troubleshooting/SKILL.md",
+      "computedHash": "8a14347215219ad708a05b170ed8ef2d0dedfbf2198a0f80bb111d1cc456369c"
+    },
+    "11ai-nodejs-api-auth": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-nodejs-api-operations/skills/11ai-nodejs-api-auth/SKILL.md",
+      "computedHash": "b962eeade532546a6b80aeaf0bdbaad795ff8ddb582cdb02297c9e7f16d94afd"
+    },
+    "11ai-nodejs-api-cheatsheet": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-nodejs-api-operations/skills/11ai-nodejs-api-cheatsheet/SKILL.md",
+      "computedHash": "714400dd55511092391b9e54a54f1c29a28449c4f1010403f583b45347a1a1b0"
+    },
+    "11ai-nodejs-api-environment": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-nodejs-api-operations/skills/11ai-nodejs-api-environment/SKILL.md",
+      "computedHash": "db6741c9f1e3bb3063dd04daaaad3a3f49f2b3800e74b70dd56f609d32af2003"
+    },
+    "11ai-nodejs-api-errors": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-nodejs-api-operations/skills/11ai-nodejs-api-errors/SKILL.md",
+      "computedHash": "088935f2fcfc2c8c6323d379ffdb91c1649c83bd3955507374605bb8ec5148b9"
+    },
+    "11ai-nodejs-api-http-client": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-nodejs-api-operations/skills/11ai-nodejs-api-http-client/SKILL.md",
+      "computedHash": "286b29c7220528f5a6d1e984a7ce171a55d64559751caac95f1cf6e13dff5da9"
+    },
+    "11ai-nodejs-api-routes": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-nodejs-api-operations/skills/11ai-nodejs-api-routes/SKILL.md",
+      "computedHash": "cb9e3f37d259bbac2e881f8d12f1ac85cd01e2fbe1dba3b19694988a123ee62c"
+    },
+    "11ai-nodejs-api-server": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-nodejs-api-operations/skills/11ai-nodejs-api-server/SKILL.md",
+      "computedHash": "afbccbc8f54b220e22a76d057c3f1d3df20c6f9a2c7c64a101e276ece9fc6610"
+    },
+    "11ai-nodejs-api-testing": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-nodejs-api-operations/skills/11ai-nodejs-api-testing/SKILL.md",
+      "computedHash": "0badf8867d0c8316b2086bfe29e707a4a79494ce490697684bfdfe491806d8e0"
+    },
+    "11ai-nodejs-api-troubleshooting": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-nodejs-api-operations/skills/11ai-nodejs-api-troubleshooting/SKILL.md",
+      "computedHash": "bbb607cda2ad2487946a216abcbc560b3a86808473d04443d04813fcc33908f0"
+    },
+    "11ai-nodejs-api-validation": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-nodejs-api-operations/skills/11ai-nodejs-api-validation/SKILL.md",
+      "computedHash": "cd59afd6cf9ce089f7d68baa93f891ee7820ef8182559bcb3983b484abd65740"
+    },
+    "11ai-security-dep-scan": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-security/skills/11ai-security-dep-scan/SKILL.md",
+      "computedHash": "12d91acccd16d080ecb8f975c95e842914bed981f8280a025c2a2c478a195afb"
+    },
+    "11ai-super-bugfixing": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-super/skills/11ai-super-bugfixing/SKILL.md",
+      "computedHash": "489edbfb195172d2ef0cfda44e28c0e7e1cc00523397172bcba6feec6f209e91"
+    },
+    "11ai-super-creator": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-super/skills/11ai-super-creator/SKILL.md",
+      "computedHash": "cc87976e7743021094ff2c64cacdad899cde6d2d564dddd3ac047dde9820d255"
+    },
+    "11ai-super-metadata": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-super/skills/11ai-super-metadata/SKILL.md",
+      "computedHash": "535dbef251f6831e3e8a37b9aa60e40a24631768d0f8906dfa66ec8221c0aabb"
+    },
+    "11ai-super-performance": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-super/skills/11ai-super-performance/SKILL.md",
+      "computedHash": "596bc53eee9c050a53c0a1f0552f455fa6d83b880dea5eeaed62c6826a1171ef"
+    },
+    "11ai-super-readme": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-super/skills/11ai-super-readme/SKILL.md",
+      "computedHash": "a16ac8077f1d549940262001788c7aaaf7cc2073d7283fd0f606608b05630975"
+    },
+    "11ai-super-security": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-super/skills/11ai-super-security/SKILL.md",
+      "computedHash": "df76cc61f37dd0491bd483020ac71a714e41f3858d8ff2583c0af97c697164e6"
+    },
+    "11ai-super-skill-qa": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-super/skills/11ai-super-skill-qa/SKILL.md",
+      "computedHash": "5af2af36a7c73625895587122a226b882d98966784e9332f2079a24a83817cea"
+    },
+    "11ai-super-ux": {
+      "source": "rj11io/11ai",
+      "sourceType": "github",
+      "skillPath": "v0/plugins/11ai-super/skills/11ai-super-ux/SKILL.md",
+      "computedHash": "da9a809eb123176f7cc2ec5d88377d5d2451ad29aec8e650e4d6cb28ea604a8e"
+    }
+  }
+}
