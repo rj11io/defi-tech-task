@@ -44,6 +44,7 @@ const HeaderComponent = props => {
                 <div className="flex items-center justify-end space-x-1">
                   <UserInfo user={logged} noText link={false} />
                   <Button
+                    aria-label="Open navigation"
                     type="primary"
                     shape="circle"
                     icon={<FontAwesomeIcon icon={faBars} />}

@@ -1,1 +1,96 @@
-/* SILENCE IS GOLD */
+.diary-page {
+  width: min(100%, 1180px);
+  margin: 0 auto;
+}
+
+.diary-alert {
+  margin-bottom: 16px;
+}
+
+.diary-stats {
+  margin-bottom: 16px;
+}
+
+.diary-stat-card,
+.diary-table-card {
+  box-shadow: 0 8px 24px rgb(25 55 95 / 6%);
+}
+
+.diary-stat-card .ant-statistic-content {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.diary-section-title {
+  margin: 0 !important;
+}
+
+.diary-section-subtitle {
+  margin: 4px 0 0 !important;
+}
+
+.diary-table-card .ant-card-head {
+  min-height: 96px;
+}
+
+.diary-table-card .ant-card-extra {
+  max-width: 100%;
+}
+
+.diary-table-card .ant-card-extra .ant-space {
+  justify-content: flex-end;
+}
+
+.diary-form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+@media (width <= 767px) {
+  .diary-table-card .ant-card-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .diary-table-card .ant-card-extra {
+    padding: 0 0 16px;
+    width: 100%;
+  }
+
+  .diary-table-card .ant-card-extra .ant-space,
+  .diary-table-card .ant-card-extra .ant-input,
+  .diary-table-card .ant-card-extra .ant-select {
+    width: 100%;
+  }
+}
+
+.dark #logo {
+  filter: brightness(0) invert(1);
+}
+
+.diary-form-alert {
+  margin-bottom: 16px;
+}
+
+@media (width <= 360px) {
+  .content-panel #title-box > div > .flex-auto {
+    min-width: 0;
+  }
+
+  .content-panel #title-box > div {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .content-panel #title-box > div > .flex-none {
+    width: 100%;
+  }
+
+  .content-panel #title-box > div > .flex-none .ant-btn {
+    width: 100%;
+  }
+}

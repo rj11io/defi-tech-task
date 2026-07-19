@@ -31,4 +31,10 @@ i18n
 
 i18n.on('languageChanged', lng => dayjs.locale(lng));
 
+i18n.on('languageChanged', lng => {
+  document.documentElement.lang = lng;
+});
+
+document.documentElement.lang = i18n.language || defaultLanguage;
+
 export default i18n;

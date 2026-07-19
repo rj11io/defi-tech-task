@@ -27,7 +27,7 @@ app.use(
     credentials: true,
     origin: process.env.CORS_ORIGIN,
     allowedHeaders: ['content-type'],
-    exposedHeaders: ['x-total-count', 'x-next-key']
+    exposedHeaders: ['x-total-count', 'x-total-income', 'x-total-expense', 'x-page', 'x-page-size', 'x-next-key']
   })
 );
 

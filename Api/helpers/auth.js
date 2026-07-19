@@ -1,16 +1,25 @@
 const jwt = require('jsonwebtoken');
 const Rt = require('../models/rt');
 
-const secret = () => process.env.JWT_SECRET || 'secret';
+const accessSecret = () => {
+  if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is required');
+  return process.env.JWT_SECRET;
+};
+
+const changePasswordSecret = () => {
+  if (!process.env.CHANGE_PASSWORD_SECRET) throw new Error('CHANGE_PASSWORD_SECRET is required');
+  return process.env.CHANGE_PASSWORD_SECRET;
+};
 
 const genereteAuthToken = user => ({
   token: jwt.sign(
     {
       id: user._id.toString(),
       email: user.email,
-      role: user.role || user.roles?.[0]
+      role: user.role || user.roles?.[0],
+      purpose: 'access'
     },
-    secret(),
+    accessSecret(),
     { expiresIn: '24h' }
   )
 });
@@ -20,9 +29,10 @@ const genereteChangePasswordToken = user => ({
     {
       id: user._id.toString(),
       email: user.email,
-      authReset: user.authReset || null
+      authReset: user.authReset || null,
+      purpose: 'password-reset'
     },
-    secret(),
+    changePasswordSecret(),
     { expiresIn: '1h' }
   )
 });
@@ -32,40 +42,42 @@ const generateToken = async (res, user) => {
   const userId = user._id || user.id;
   const userEmail = user.email;
   const userRole = user.role || 'user';
-  
+
   const accessToken = jwt.sign(
     {
       id: userId,
       email: userEmail,
-      role: userRole
+      role: userRole,
+      purpose: 'access'
     },
-    secret(),
+    accessSecret(),
     { expiresIn: '24h' }
   );
-  
+
   const refreshToken = jwt.sign(
     {
       id: userId,
       email: userEmail,
-      role: userRole
+      role: userRole,
+      purpose: 'refresh'
     },
-    process.env.RT_SECRET || secret(),
+    process.env.RT_SECRET || accessSecret(),
     { expiresIn: '7d' }
   );
-  
+
   // Set cookies
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000,
     sameSite: 'lax'
   });
-  
+
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60 * 1000,
     sameSite: 'lax'
   });
-  
+
   res.cookie('logged', true, {
     maxAge: 24 * 60 * 60 * 1000,
     sameSite: 'lax'
@@ -77,11 +89,11 @@ const generateToken = async (res, user) => {
     user: userId,
     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
   });
-  
+
   return { accessToken, refreshToken };
 };
 
-const clearTokens = (res) => {
+const clearTokens = res => {
   res.clearCookie('accessToken');
   res.clearCookie('refreshToken');
   res.clearCookie('logged');
@@ -91,5 +103,7 @@ module.exports = {
   generateToken,
   clearTokens,
   genereteAuthToken,
-  genereteChangePasswordToken
+  genereteChangePasswordToken,
+  accessSecret,
+  changePasswordSecret
 };
