@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LLM Cost Report</title>
+  <style>
+    :root { color-scheme: light dark; --bg: #f6f7fb; --card: #fff; --text: #172033; --muted: #5d6678; --line: #dce1ea; --accent: #3157d5; }
+    @media (prefers-color-scheme: dark) { :root { --bg: #10131a; --card: #181d27; --text: #edf1f7; --muted: #aab3c3; --line: #303848; --accent: #8da8ff; } }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    main { width: 100%; margin: 0; padding: 16px 20px 24px; background: transparent; }
+    h1 { margin: 0 0 .75rem; font-size: clamp(1.65rem, 3vw, 2.4rem); letter-spacing: -.035em; }
+    .report-section { margin: .55rem 0; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--card) 96%, var(--accent)); }
+    .report-section.level-2 { margin-top: .8rem; }
+    .report-section.level-3 { margin: .45rem 0; }
+    summary { display: flex; align-items: center; gap: .5rem; padding: .62rem .78rem; cursor: pointer; color: var(--text); font-weight: 750; list-style: none; user-select: none; }
+    summary::-webkit-details-marker { display: none; }
+    summary::before { content: "▸"; flex: 0 0 auto; color: var(--accent); transition: transform .15s ease; }
+    details[open] > summary::before { transform: rotate(90deg); }
+    .level-2 > summary { font-size: 1.12rem; }
+    .level-3 > summary { font-size: .98rem; }
+    .section-body { padding: 0 .78rem .72rem; border-top: 1px solid var(--line); }
+    p, li { margin: .45rem 0; color: var(--muted); }
+    blockquote { margin: .75rem 0; padding: .65rem .8rem; border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 7%, transparent); color: var(--muted); }
+    .table-wrap { margin: .55rem 0 .9rem; overflow-x: auto; border: 1px solid var(--line); border-radius: 7px; }
+    table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+    th, td { text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); white-space: nowrap; }
+    td { padding: .42rem .52rem; }
+    th { padding: 0; background: color-mix(in srgb, var(--accent) 8%, transparent); color: var(--text); }
+    .sort-button { display: flex; width: 100%; align-items: center; gap: .3rem; padding: .42rem .52rem; border: 0; background: transparent; color: inherit; font: inherit; font-weight: 700; text-align: left; white-space: nowrap; cursor: pointer; }
+    .sort-button:hover, .sort-button:focus-visible { background: color-mix(in srgb, var(--accent) 14%, transparent); outline: none; }
+    .sort-indicator { min-width: .8em; color: var(--accent); }
+    th[aria-sort="descending"] .sort-indicator::after { content: "▼"; }
+    th[aria-sort="ascending"] .sort-indicator::after { content: "▲"; }
+    tr:last-child td { border-bottom: 0; }
+    code { padding: .1rem .3rem; border-radius: 4px; background: color-mix(in srgb, var(--accent) 10%, transparent); color: var(--text); }
+    a { color: var(--accent); }
+    .generation-message { margin-top: 1rem; }
+    .signature { margin-top: .75rem; padding-top: .75rem; border-top: 1px solid var(--line); }
+    @media (max-width: 700px) { main { padding: 10px; } }
+  </style>
+</head>
+<body>
+<main>
+<h1>Project LLM Cost Report</h1>
+<details class="report-section level-2"><summary><span class="section-title">Totals</span></summary><div class="section-body">
+<div class="table-wrap"><table><thead><tr>
+<th scope="col" aria-sort="none"><button type="button" class="sort-button">Metric<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Value<span class="sort-indicator" aria-hidden="true"></span></button></th>
+</tr></thead><tbody>
+<tr><td>Threads recognized</td><td>21</td></tr>
+<tr><td>Threads with measured tokens</td><td>21 / 21</td></tr>
+<tr><td>Threads with derived cost</td><td>21 / 21</td></tr>
+<tr><td>Threads with reported-only cost</td><td>0</td></tr>
+<tr><td>Threads with unavailable or partial cost</td><td>0</td></tr>
+<tr><td>Measured/provider tokens</td><td>261,681,111</td></tr>
+<tr><td>Known cost</td><td>$110.6759</td></tr>
+<tr><td>Estimated active time</td><td>4h 31m 17s</td></tr>
+<tr><td>Cost / active hour</td><td>$24.4786</td></tr>
+<tr><td>Sum of thread wall time</td><td>5h 13m 30s</td></tr>
+<tr><td>Cost / wall hour</td><td>$21.1824</td></tr>
+<tr><td>Cost / thread</td><td>$5.2703</td></tr>
+<tr><td>Cost coverage</td><td>100.0%</td></tr>
+<tr><td>Input tokens</td><td>260,974,134</td></tr>
+<tr><td>Cached input</td><td>254,686,740 (97.6%)</td></tr>
+<tr><td>Output tokens</td><td>706,977</td></tr>
+<tr><td>Reasoning output</td><td>173,882 (24.6%)</td></tr>
+<tr><td>Threads with measurable wall time</td><td>21 / 21</td></tr>
+<tr><td>Threads with estimated active time</td><td>21 / 21</td></tr>
+<tr><td>Active / wall time</td><td>86.5%</td></tr>
+</tbody></table></div>
+<p>The known-cost total includes derived API-equivalent prices and harness-reported costs. It is not necessarily an invoice, especially for subscription, enterprise, batch, priority, or negotiated usage.</p>
+</div></details>
+<details class="report-section level-2"><summary><span class="section-title">Scan coverage</span></summary><div class="section-body">
+<div class="table-wrap"><table><thead><tr>
+<th scope="col" aria-sort="none"><button type="button" class="sort-button">Coverage<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Value<span class="sort-indicator" aria-hidden="true"></span></button></th>
+</tr></thead><tbody>
+<tr><td>Files visited</td><td>57</td></tr>
+<tr><td>JSON/JSONL/NDJSON files inspected</td><td>57</td></tr>
+<tr><td>Project JSON-family files</td><td>36</td></tr>
+<tr><td>Native session files metadata-checked</td><td>461</td></tr>
+<tr><td>Project-associated native sessions</td><td>21</td></tr>
+<tr><td>Codex sessions</td><td>18</td></tr>
+<tr><td>Claude sessions</td><td>3</td></tr>
+<tr><td>Gemini CLI sessions</td><td>0</td></tr>
+<tr><td>Cline tasks</td><td>0</td></tr>
+<tr><td>Roo Code tasks</td><td>0</td></tr>
+<tr><td>OpenCode sessions</td><td>0</td></tr>
+<tr><td>Files containing usage records</td><td>21</td></tr>
+<tr><td>Malformed records</td><td>6</td></tr>
+<tr><td>Pricing catalog</td><td>.agents/skills/11ai-llm-cost-project/references/pricing.json</td></tr>
+<tr><td>Oldest observed thread</td><td>2026-07-19T19:49:49.815Z</td></tr>
+<tr><td>Newest observed thread</td><td>2026-07-20T00:47:36.019Z</td></tr>
+</tbody></table></div>
+</div></details>
+<details class="report-section level-2"><summary><span class="section-title">Cost by provider</span></summary><div class="section-body">
+<div class="table-wrap"><table><thead><tr>
+<th scope="col" aria-sort="none"><button type="button" class="sort-button">Provider<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Threads<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Input<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cached<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Output<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Tokens<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Known cost<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Active time<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cost / active hour<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Wall time<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cost / wall hour<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cost / thread<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Priced<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Unpriced<span class="sort-indicator" aria-hidden="true"></span></button></th>
+</tr></thead><tbody>
+<tr><td>openai</td><td>18</td><td>229,398,149</td><td>223,505,920</td><td>628,626</td><td>230,026,775</td><td>$98.1240</td><td>3h 52m 45s</td><td>$25.2959</td><td>4h 9m 50s</td><td>$23.5652</td><td>$5.4513</td><td>18</td><td>0</td></tr>
+<tr><td>anthropic</td><td>3</td><td>31,575,985</td><td>31,180,820</td><td>78,351</td><td>31,654,336</td><td>$12.5519</td><td>38m 32s</td><td>$19.5425</td><td>1h 3m 39s</td><td>$11.8306</td><td>$4.1840</td><td>3</td><td>0</td></tr>
+<tr><td>Total</td><td>21</td><td>260,974,134</td><td>254,686,740</td><td>706,977</td><td>261,681,111</td><td>$110.6759</td><td>4h 31m 17s</td><td>$24.4786</td><td>5h 13m 30s</td><td>$21.1824</td><td>$5.2703</td><td>21</td><td>0</td></tr>
+</tbody></table></div>
+</div></details>
+<details class="report-section level-2"><summary><span class="section-title">Cost by harness</span></summary><div class="section-body">
+<div class="table-wrap"><table><thead><tr>
+<th scope="col" aria-sort="none"><button type="button" class="sort-button">Harness<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Threads<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Input<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cached<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Output<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Tokens<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Known cost<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Active time<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cost / active hour<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Wall time<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cost / wall hour<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cost / thread<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Reported-cost sum<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Average tokens / thread<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Priced<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Unpriced<span class="sort-indicator" aria-hidden="true"></span></button></th>
+</tr></thead><tbody>
+<tr><td>codex</td><td>18</td><td>229,398,149</td><td>223,505,920</td><td>628,626</td><td>230,026,775</td><td>$98.1240</td><td>3h 52m 45s</td><td>$25.2959</td><td>4h 9m 50s</td><td>$23.5652</td><td>$5.4513</td><td>n/a</td><td>12,779,265</td><td>18</td><td>0</td></tr>
+<tr><td>claude</td><td>3</td><td>31,575,985</td><td>31,180,820</td><td>78,351</td><td>31,654,336</td><td>$12.5519</td><td>38m 32s</td><td>$19.5425</td><td>1h 3m 39s</td><td>$11.8306</td><td>$4.1840</td><td>n/a</td><td>10,551,445</td><td>3</td><td>0</td></tr>
+<tr><td>Total</td><td>21</td><td>260,974,134</td><td>254,686,740</td><td>706,977</td><td>261,681,111</td><td>$110.6759</td><td>4h 31m 17s</td><td>$24.4786</td><td>5h 13m 30s</td><td>$21.1824</td><td>$5.2703</td><td>n/a</td><td>12,461,005</td><td>21</td><td>0</td></tr>
+</tbody></table></div>
+</div></details>
+<details class="report-section level-2"><summary><span class="section-title">Cost by model</span></summary><div class="section-body">
+<div class="table-wrap"><table><thead><tr>
+<th scope="col" aria-sort="none"><button type="button" class="sort-button">Provider / model<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Threads<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Input<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cached<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Output<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Tokens<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cost<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Active time<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cost / active hour<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Wall time<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cost / wall hour<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cost / thread<span class="sort-indicator" aria-hidden="true"></span></button></th>
+</tr></thead><tbody>
+<tr><td>openai / gpt-5.6-sol</td><td>4</td><td>119,128,249</td><td>116,267,776</td><td>340,018</td><td>119,468,267</td><td>$82.6368</td><td>1h 33m 39s</td><td>$52.9400</td><td>1h 41m 50s</td><td>$48.6871</td><td>$20.6592</td></tr>
+<tr><td>openai / gpt-5.6-luna</td><td>14</td><td>110,269,900</td><td>107,238,144</td><td>288,608</td><td>110,558,508</td><td>$15.4872</td><td>2h 19m 5s</td><td>$6.6810</td><td>2h 28m</td><td>$6.2787</td><td>$1.1062</td></tr>
+<tr><td>anthropic / claude-sonnet-5</td><td>3</td><td>31,575,985</td><td>31,180,820</td><td>78,351</td><td>31,654,336</td><td>$12.5519</td><td>38m 32s</td><td>$19.5425</td><td>1h 3m 39s</td><td>$11.8306</td><td>$4.1840</td></tr>
+<tr><td>Total</td><td>21</td><td>260,974,134</td><td>254,686,740</td><td>706,977</td><td>261,681,111</td><td>$110.6759</td><td>4h 31m 17s</td><td>$24.4786</td><td>5h 13m 30s</td><td>$21.1824</td><td>$5.2703</td></tr>
+</tbody></table></div>
+</div></details>
+<details class="report-section level-2"><summary><span class="section-title">Cost by model by effort</span></summary><div class="section-body">
+<div class="table-wrap"><table><thead><tr>
+<th scope="col" aria-sort="none"><button type="button" class="sort-button">Provider / model<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Effort<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Threads<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Input<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cached<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Output<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Tokens<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Known cost<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Active time<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cost / active hour<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Wall time<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cost / wall hour<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cost / thread<span class="sort-indicator" aria-hidden="true"></span></button></th>
+</tr></thead><tbody>
+<tr><td>openai / gpt-5.6-sol</td><td>high</td><td>4</td><td>119,128,249</td><td>116,267,776</td><td>340,018</td><td>119,468,267</td><td>$82.6368</td><td>1h 33m 39s</td><td>$52.9400</td><td>1h 41m 50s</td><td>$48.6871</td><td>$20.6592</td></tr>
+<tr><td>anthropic / claude-sonnet-5</td><td>high</td><td>3</td><td>31,575,985</td><td>31,180,820</td><td>78,351</td><td>31,654,336</td><td>$12.5519</td><td>38m 32s</td><td>$19.5425</td><td>1h 3m 39s</td><td>$11.8306</td><td>$4.1840</td></tr>
+<tr><td>openai / gpt-5.6-luna</td><td>high</td><td>10</td><td>85,666,252</td><td>83,235,840</td><td>247,695</td><td>85,913,947</td><td>$12.2402</td><td>1h 25m 55s</td><td>$8.5487</td><td>1h 25m 55s</td><td>$8.5487</td><td>$1.2240</td></tr>
+<tr><td>openai / gpt-5.6-luna</td><td>low</td><td>4</td><td>24,603,648</td><td>24,002,304</td><td>40,913</td><td>24,644,561</td><td>$3.2471</td><td>53m 11s</td><td>$3.6637</td><td>1h 2m 5s</td><td>$3.1378</td><td>$0.8118</td></tr>
+<tr><td>Total</td><td>All efforts</td><td>21</td><td>260,974,134</td><td>254,686,740</td><td>706,977</td><td>261,681,111</td><td>$110.6759</td><td>4h 31m 17s</td><td>$24.4786</td><td>5h 13m 30s</td><td>$21.1824</td><td>$5.2703</td></tr>
+</tbody></table></div>
+</div></details>
+<details class="report-section level-2"><summary><span class="section-title">Cost by root and child folder</span></summary><div class="section-body">
+<p>The folder is the direct child of the scanned root; files directly in the root are grouped as <code>.</code>.</p>
+<div class="table-wrap"><table><thead><tr>
+<th scope="col" aria-sort="none"><button type="button" class="sort-button">Folder<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Threads<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Input<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cached<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Output<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Tokens<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Known cost<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Active time<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cost / active hour<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Wall time<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cost / wall hour<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cost / thread<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Priced<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Unpriced<span class="sort-indicator" aria-hidden="true"></span></button></th>
+</tr></thead><tbody>
+<tr><td>.</td><td>21</td><td>260,974,134</td><td>254,686,740</td><td>706,977</td><td>261,681,111</td><td>$110.6759</td><td>4h 31m 17s</td><td>$24.4786</td><td>5h 13m 30s</td><td>$21.1824</td><td>$5.2703</td><td>21</td><td>0</td></tr>
+<tr><td>Total</td><td>21</td><td>260,974,134</td><td>254,686,740</td><td>706,977</td><td>261,681,111</td><td>$110.6759</td><td>4h 31m 17s</td><td>$24.4786</td><td>5h 13m 30s</td><td>$21.1824</td><td>$5.2703</td><td>21</td><td>0</td></tr>
+</tbody></table></div>
+</div></details>
+<details class="report-section level-2"><summary><span class="section-title">Token composition</span></summary><div class="section-body">
+<div class="table-wrap"><table><thead><tr>
+<th scope="col" aria-sort="none"><button type="button" class="sort-button">Token class<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Tokens<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Share of available total<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Meaning<span class="sort-indicator" aria-hidden="true"></span></button></th>
+</tr></thead><tbody>
+<tr><td>Uncached input</td><td>5,892,693</td><td>2.3%</td><td>Input billed at the base input rate</td></tr>
+<tr><td>Cached input read</td><td>254,686,740</td><td>97.6%</td><td>Provider cache-hit tokens</td></tr>
+<tr><td>5-minute cache write</td><td>154,303</td><td>n/a</td><td>Anthropic-style ephemeral cache writes</td></tr>
+<tr><td>1-hour cache write</td><td>240,398</td><td>n/a</td><td>Anthropic-style extended cache writes</td></tr>
+<tr><td>Output</td><td>706,977</td><td>0.3%</td><td>Generated output, including reasoning where exposed</td></tr>
+<tr><td>Reasoning output</td><td>173,882</td><td>24.6%</td><td>Subset of output, never added twice</td></tr>
+</tbody></table></div>
+</div></details>
+<details class="report-section level-2"><summary><span class="section-title">Thread detail</span></summary><div class="section-body">
+<div class="table-wrap"><table><thead><tr>
+<th scope="col" aria-sort="none"><button type="button" class="sort-button">Thread<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Source<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Provider / model / effort<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Input<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cached<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Output<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Tokens<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Selected cost<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Active time<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cost / active hour<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Wall time<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Cost / wall hour<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Harness reported<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Method<span class="sort-indicator" aria-hidden="true"></span></button></th>
+</tr></thead><tbody>
+<tr><td>openai:7a9c03696e716e7a2391</td><td>codex-session/sessions/2026/07/19/rollout-2026-07-19T22-55-29-019f7c60-89b1-7391-b742-7bfffbe6b7fc.jsonl</td><td>openai / gpt-5.6-sol / high</td><td>38,693,519</td><td>37,925,632</td><td>104,860</td><td>38,798,379</td><td>$25.9481</td><td>56m 1s</td><td>$27.7921</td><td>56m 1s</td><td>$27.7921</td><td>n/a</td><td>derived</td></tr>
+<tr><td>openai:b69f3464ff4076b75443</td><td>codex-session/sessions/2026/07/19/rollout-2026-07-19T23-26-47-019f7c7d-3399-7883-9b1b-6e6aedfd77b1.jsonl</td><td>openai / gpt-5.6-sol / high</td><td>27,739,139</td><td>26,994,944</td><td>78,101</td><td>27,817,240</td><td>$19.5615</td><td>10m 36s</td><td>$110.7854</td><td>13m 32s</td><td>$86.7504</td><td>n/a</td><td>derived</td></tr>
+<tr><td>openai:70cae2eae6d7193f8be5</td><td>codex-session/sessions/2026/07/19/rollout-2026-07-19T23-26-28-019f7c7c-e7f5-76b1-a5bd-9bffa4da72d1.jsonl</td><td>openai / gpt-5.6-sol / high</td><td>26,622,557</td><td>25,953,792</td><td>79,429</td><td>26,701,986</td><td>$18.7036</td><td>15m 23s</td><td>$72.9888</td><td>17m 43s</td><td>$63.3601</td><td>n/a</td><td>derived</td></tr>
+<tr><td>openai:5004e0b2d034f79ada94</td><td>codex-session/sessions/2026/07/19/rollout-2026-07-19T23-26-36-019f7c7d-087f-72d1-9160-354bf717f933.jsonl</td><td>openai / gpt-5.6-sol / high</td><td>26,073,034</td><td>25,393,408</td><td>77,628</td><td>26,150,662</td><td>$18.4237</td><td>11m 40s</td><td>$94.7342</td><td>14m 35s</td><td>$75.8281</td><td>n/a</td><td>derived</td></tr>
+<tr><td>anthropic:29b64a1e92bc138a71da</td><td>claude-session/projects/-Users-ricardojorge-Desktop-archive-2026-repos-defi-tech-task/4bc9c54a-5306-4230-a176-747a5a04b97d.jsonl</td><td>anthropic / claude-sonnet-5 / high</td><td>29,165,596</td><td>28,924,804</td><td>60,551</td><td>29,226,147</td><td>$11.0293</td><td>31m 49s</td><td>$20.8040</td><td>56m 56s</td><td>$11.6240</td><td>n/a</td><td>derived</td></tr>
+<tr><td>openai:41171d57921e251783c5</td><td>codex-session/sessions/2026/07/19/rollout-2026-07-19T22-12-59-019f7c39-a346-7202-8cec-0bf3d7b5998f.jsonl</td><td>openai / gpt-5.6-luna / high</td><td>28,036,389</td><td>27,486,208</td><td>70,010</td><td>28,106,399</td><td>$3.7189</td><td>38m 4s</td><td>$5.8623</td><td>38m 4s</td><td>$5.8623</td><td>n/a</td><td>derived</td></tr>
+<tr><td>openai:ffdfd50fc623a440609f</td><td>codex-session/sessions/2026/07/19/rollout-2026-07-19T21-04-43-019f7bfb-2209-7aa0-98f3-28f9840d95c6.jsonl</td><td>openai / gpt-5.6-luna / low</td><td>21,792,063</td><td>21,462,272</td><td>34,499</td><td>21,826,562</td><td>$2.6830</td><td>49m 53s</td><td>$3.2268</td><td>58m 48s</td><td>$2.7377</td><td>n/a</td><td>derived</td></tr>
+<tr><td>openai:fa1af5f44128a9c3d56a</td><td>codex-session/sessions/2026/07/19/rollout-2026-07-19T22-29-00-019f7c48-4974-7c31-aca5-20686ff0ff3d.jsonl</td><td>openai / gpt-5.6-luna / high</td><td>14,974,973</td><td>14,528,768</td><td>49,090</td><td>15,024,063</td><td>$2.1936</td><td>6m 22s</td><td>$20.6478</td><td>6m 22s</td><td>$20.6478</td><td>n/a</td><td>derived</td></tr>
+<tr><td>openai:2b125ea48b9785ecd82c</td><td>codex-session/sessions/2026/07/19/rollout-2026-07-19T22-29-00-019f7c48-4a38-79e1-9772-eb8b7dc5823a.jsonl</td><td>openai / gpt-5.6-luna / high</td><td>14,544,431</td><td>14,051,328</td><td>48,405</td><td>14,592,836</td><td>$2.1887</td><td>6m 34s</td><td>$20.0200</td><td>6m 34s</td><td>$20.0200</td><td>n/a</td><td>derived</td></tr>
+<tr><td>openai:20e6abb1ef0995740971</td><td>codex-session/sessions/2026/07/19/rollout-2026-07-19T22-29-00-019f7c48-4ba7-7202-bed4-a283fb33ab1d.jsonl</td><td>openai / gpt-5.6-luna / high</td><td>13,739,794</td><td>13,302,528</td><td>49,389</td><td>13,789,183</td><td>$2.0639</td><td>5m 56s</td><td>$20.8554</td><td>5m 56s</td><td>$20.8554</td><td>n/a</td><td>derived</td></tr>
+<tr><td>openai:b92aae1c08076c6f76ec</td><td>codex-session/sessions/2026/07/20/rollout-2026-07-20T00-14-49-019f7ca9-2a33-7062-9b9a-a5cbed02a6f4.jsonl</td><td>openai / gpt-5.6-luna / high</td><td>13,286,964</td><td>12,956,416</td><td>18,614</td><td>13,305,578</td><td>$1.7379</td><td>21m 9s</td><td>$4.9301</td><td>21m 9s</td><td>$4.9301</td><td>n/a</td><td>derived</td></tr>
+<tr><td>anthropic:02d41aa05f4bc46f18d7</td><td>claude-session/projects/-Users-ricardojorge-Desktop-archive-2026-repos-defi-tech-task/4bc9c54a-5306-4230-a176-747a5a04b97d/subagents/agent-a946bc73092c90888.jsonl</td><td>anthropic / claude-sonnet-5 / high</td><td>1,402,604</td><td>1,304,109</td><td>9,691</td><td>1,412,295</td><td>$0.9059</td><td>3m 40s</td><td>$14.7935</td><td>3m 40s</td><td>$14.7935</td><td>n/a</td><td>derived</td></tr>
+<tr><td>anthropic:087dc88d11b0ba4a7a75</td><td>claude-session/projects/-Users-ricardojorge-Desktop-archive-2026-repos-defi-tech-task/4bc9c54a-5306-4230-a176-747a5a04b97d/subagents/agent-aa2562480b6500abc.jsonl</td><td>anthropic / claude-sonnet-5 / high</td><td>1,007,785</td><td>951,907</td><td>8,109</td><td>1,015,894</td><td>$0.6167</td><td>3m 3s</td><td>$12.1169</td><td>3m 3s</td><td>$12.1169</td><td>n/a</td><td>derived</td></tr>
+<tr><td>openai:eb1e61033b6cbed5d86c</td><td>codex-session/sessions/2026/07/20/rollout-2026-07-20T00-37-20-019f7cbd-c83e-7e21-9270-a7e9e059996c.jsonl</td><td>openai / gpt-5.6-luna / low</td><td>2,501,151</td><td>2,261,760</td><td>3,138</td><td>2,504,289</td><td>$0.4844</td><td>1m 30s</td><td>$19.4745</td><td>1m 30s</td><td>$19.4745</td><td>n/a</td><td>derived</td></tr>
+<tr><td>openai:034adbab34b5d368e75d</td><td>codex-session/sessions/2026/07/19/rollout-2026-07-19T21-27-59-019f7c10-7018-7571-8a6f-43b4bc9e8024.jsonl</td><td>openai / gpt-5.6-luna / high</td><td>374,350</td><td>324,096</td><td>3,893</td><td>378,243</td><td>$0.1060</td><td>1m 53s</td><td>$3.3847</td><td>1m 53s</td><td>$3.3847</td><td>n/a</td><td>derived</td></tr>
+<tr><td>openai:8ef4c264861e16308006</td><td>codex-session/sessions/2026/07/19/rollout-2026-07-19T22-08-33-019f7c35-91c0-75a1-b96a-b5bd0850627f.jsonl</td><td>openai / gpt-5.6-luna / high</td><td>308,933</td><td>265,984</td><td>2,360</td><td>311,293</td><td>$0.0837</td><td>3m 11s</td><td>$1.5761</td><td>3m 11s</td><td>$1.5761</td><td>n/a</td><td>derived</td></tr>
+<tr><td>openai:e1b98f12d1039f801a3b</td><td>codex-session/sessions/2026/07/19/rollout-2026-07-19T20-49-38-019f7bed-5101-7142-a48b-5c874d6061fa.jsonl</td><td>openai / gpt-5.6-luna / low</td><td>290,013</td><td>268,288</td><td>3,079</td><td>293,092</td><td>$0.0670</td><td>1m 34s</td><td>$2.5608</td><td>1m 34s</td><td>$2.5608</td><td>n/a</td><td>derived</td></tr>
+<tr><td>openai:6e10f8987146658cbbec</td><td>codex-session/sessions/2026/07/19/rollout-2026-07-19T21-25-57-019f7c0e-9374-7071-87b7-a6014540b30b.jsonl</td><td>openai / gpt-5.6-luna / high</td><td>155,933</td><td>122,368</td><td>2,495</td><td>158,428</td><td>$0.0608</td><td>1m</td><td>$3.6229</td><td>1m</td><td>$3.6229</td><td>n/a</td><td>derived</td></tr>
+<tr><td>openai:3748677b74b2caddaa9c</td><td>codex-session/sessions/2026/07/19/rollout-2026-07-19T21-23-05-019f7c0b-f3f9-7f62-be12-95effdc46a1e.jsonl</td><td>openai / gpt-5.6-luna / high</td><td>128,722</td><td>96,000</td><td>1,842</td><td>130,564</td><td>$0.0534</td><td>46s</td><td>$4.1354</td><td>46s</td><td>$4.1354</td><td>n/a</td><td>derived</td></tr>
+<tr><td>openai:ea554ac7fb3ae790dac8</td><td>codex-session/sessions/2026/07/19/rollout-2026-07-19T22-06-47-019f7c33-f380-7b20-ae4f-271d6a323ecd.jsonl</td><td>openai / gpt-5.6-luna / high</td><td>115,763</td><td>102,144</td><td>1,597</td><td>117,360</td><td>$0.0334</td><td>59s</td><td>$2.0489</td><td>59s</td><td>$2.0489</td><td>n/a</td><td>derived</td></tr>
+<tr><td>openai:3c9298a1a2c28b909f00</td><td>codex-session/sessions/2026/07/20/rollout-2026-07-20T01-47-16-019f7cfd-d055-7821-9010-ccb381998867.jsonl</td><td>openai / gpt-5.6-luna / low</td><td>20,421</td><td>9,984</td><td>197</td><td>20,618</td><td>$0.0126</td><td>14s</td><td>$3.3641</td><td>14s</td><td>$3.3641</td><td>n/a</td><td>derived</td></tr>
+</tbody></table></div>
+</div></details>
+<details class="report-section level-2"><summary><span class="section-title">Pricing coverage</span></summary><div class="section-body">
+<div class="table-wrap"><table><thead><tr>
+<th scope="col" aria-sort="none"><button type="button" class="sort-button">Status<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Threads<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Meaning<span class="sort-indicator" aria-hidden="true"></span></button></th>
+</tr></thead><tbody>
+<tr><td>Matched</td><td>21</td><td>Model matched and all required token classes were priced</td></tr>
+<tr><td>Matched but stale</td><td>0</td><td>Matched rate is more than 30 days past verification</td></tr>
+<tr><td>Partial</td><td>0</td><td>A model matched, but one or more required rates or token classes are unavailable</td></tr>
+<tr><td>Reported</td><td>0</td><td>Cost came from the harness record rather than local pricing</td></tr>
+<tr><td>Unmatched</td><td>0</td><td>No model pattern matched the pricing catalog</td></tr>
+</tbody></table></div>
+<details class="report-section level-3"><summary><span class="section-title">Pricing catalog match detail</span></summary><div class="section-body">
+<div class="table-wrap"><table><thead><tr>
+<th scope="col" aria-sort="none"><button type="button" class="sort-button">Provider / model<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Match<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Rates per 1M<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Effective<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Verified<span class="sort-indicator" aria-hidden="true"></span></button></th><th scope="col" aria-sort="none"><button type="button" class="sort-button">Source<span class="sort-indicator" aria-hidden="true"></span></button></th>
+</tr></thead><tbody>
+<tr><td>anthropic / claude-sonnet-5</td><td>claude-sonnet-5*, claude-sonnet-4-6*</td><td>input=3, output=15, cacheWrite5m=3.75, cacheWrite1h=6, cacheRead=0.3</td><td>2026-06-24</td><td>2026-07-13</td><td>https://platform.claude.com/docs/en/pricing</td></tr>
+<tr><td>openai / gpt-5.6-luna</td><td>gpt-5.6-luna*</td><td>input=1, cachedInput=0.1, output=6</td><td>2026-07-09</td><td>2026-07-13</td><td>https://developers.openai.com/api/docs/pricing</td></tr>
+<tr><td>openai / gpt-5.6-sol</td><td>gpt-5.6-sol*</td><td>input=5, cachedInput=0.5, output=30</td><td>2026-07-09</td><td>2026-07-13</td><td>https://developers.openai.com/api/docs/pricing</td></tr>
+</tbody></table></div>
+<p>Update the pricing override and rerun when rates are stale or unmatched.</p>
+</div></details>
+</div></details>
+<details class="report-section level-2"><summary><span class="section-title">Anomalies and limitations</span></summary><div class="section-body">
+<ul><li>malformed JSON ignored: Api/db/seed/companies_h.json: Unexpected end of JSON input</li><li>malformed JSON ignored: Api/db/seed/companies.json: Unexpected end of JSON input</li><li>malformed JSON ignored: Api/db/seed/migrations.json: Unexpected end of JSON input</li><li>malformed JSON ignored: Api/db/seed/rts.json: Unexpected end of JSON input</li><li>malformed JSON ignored: Api/db/seed/users_h.json: Unexpected end of JSON input</li><li>malformed JSON ignored: Api/db/seed/users.json: Unexpected end of JSON input</li><li>logical thread identity appears in multiple source files: 4bc9c54a-5306-4230-a176-747a5a04b97d</li><li>OpenCode database opencode.db could not be read: no such column: cost</li></ul>
+</div></details>
+<details class="report-section level-2"><summary><span class="section-title">Methodology</span></summary><div class="section-body">
+<ul><li>Recursively inspect JSON, JSONL, and NDJSON files below the requested root, excluding dependency, VCS, cache, virtual-environment, and build directories.</li><li>Discover Codex, Claude Code, Gemini CLI, Cline, Roo Code, and OpenCode usage from their native local stores. Include only sessions whose recorded project directory or project hash belongs to the requested root.</li><li>Use the last cumulative Codex token-count event; deduplicate Claude streaming records; aggregate Gemini per-message counters and Cline/Roo API request metrics; read OpenCode&#39;s session ledger in read-only mode; aggregate generic usage records by provider and model.</li><li>Preserve provider-native usage semantics: OpenAI cached input is a subset of input, while Anthropic cache buckets are disjoint. Reasoning tokens are a subset of output.</li><li>Read effort only from discoverable request, message, payload, metadata, or settings fields and group Claude usage by model and recorded effort. Normalize Claude Code ultracode to xhigh. Never infer a missing effort from current settings or model defaults; report it as n/a.</li><li>Measure wall time from the first to last distinct timestamp observed for a thread. Estimate active time by summing consecutive timestamp gaps with each gap capped at five minutes; report both as unavailable when fewer than two distinct timestamps exist.</li><li>Calculate cost per wall hour and cost per active hour by dividing known cost by the corresponding summed measurable duration. Report the rate as unavailable when cost or duration is unavailable or duration is zero.</li><li>Calculate cost per thread by dividing known cost by every recognized thread in the row. Incomplete cost coverage can therefore understate this rate. Per-thread detail omits the metric because it would duplicate selected cost.</li><li>Treat missing values as unavailable. Sum known totals for overview coverage, but surface every incomplete or unpriced thread in the detail and limitations sections.</li><li>Do not include prompts, message text, secrets, or raw transcripts in this report. Source-relative paths are the traceability boundary.</li></ul>
+</div></details>
+<blockquote class="generation-message">Generated 2026-07-20T00:47:36.125Z · Root: <code>.</code> · Prices are USD per 1M tokens unless noted</blockquote>
+<p class="signature"><em>LLM token cost analysis by <a href="https://ai.rj11.io/skills/11ai-llm-cost-project" target="_blank" rel="noopener noreferrer">11ai-llm-cost-project</a>.</em></p>
+</main>
+<script>
+  (() => {
+    const sortValue = (cell) => {
+      const text = (cell?.textContent ?? "").trim()
+      const lower = text.toLowerCase()
+      if (!text || lower === "n/a" || lower === "none" || lower === "unknown") return { kind: 2, value: null }
+      if (/^\d{4}-\d{2}-\d{2}T/.test(text)) {
+        const timestamp = Date.parse(text)
+        if (Number.isFinite(timestamp)) return { kind: 0, value: timestamp }
+      }
+      let durationSeconds = 0
+      let durationParts = 0
+      const durationRemainder = lower.replace(/(\d+(?:\.\d+)?)\s*([hms])/g, (_match, amount, unit) => {
+        durationSeconds += Number(amount) * ({ h: 3600, m: 60, s: 1 })[unit]
+        durationParts += 1
+        return ""
+      }).trim()
+      if (durationParts && !durationRemainder) return { kind: 0, value: durationSeconds }
+      const normalized = text.replaceAll(",", "").replace(/^\$/, "").replace(/%$/, "").trim()
+      if (/^-?\d+(?:\.\d+)?$/.test(normalized)) return { kind: 0, value: Number(normalized) }
+      const ratio = /^(-?\d+(?:\.\d+)?)\s*\//.exec(normalized)
+      if (ratio) return { kind: 0, value: Number(ratio[1]) }
+      return { kind: 1, value: lower }
+    }
+    const compareValues = (left, right, direction) => {
+      if (left.kind === 2 && right.kind === 2) return 0
+      if (left.kind === 2) return 1
+      if (right.kind === 2) return -1
+      const comparison = left.kind === 0 && right.kind === 0
+        ? left.value - right.value
+        : String(left.value).localeCompare(String(right.value), undefined, { numeric: true, sensitivity: "base" })
+      return direction === "descending" ? -comparison : comparison
+    }
+    document.querySelectorAll("table").forEach((table) => {
+      const headers = [...table.querySelectorAll("thead th")]
+      const body = table.tBodies[0]
+      if (!body) return
+      ;[...body.rows].forEach((row, index) => { row.dataset.originalIndex = String(index) })
+      headers.forEach((header, column) => {
+        const button = header.querySelector(".sort-button")
+        if (!button) return
+        button.title = "Sort descending"
+        button.addEventListener("click", () => {
+          const direction = header.getAttribute("aria-sort") === "descending" ? "ascending" : "descending"
+          headers.forEach((item) => item.setAttribute("aria-sort", "none"))
+          header.setAttribute("aria-sort", direction)
+          headers.forEach((item) => {
+            const itemButton = item.querySelector(".sort-button")
+            if (itemButton) itemButton.title = item === header && direction === "descending" ? "Sort ascending" : "Sort descending"
+          })
+          const rows = [...body.rows]
+          const totals = rows.filter((row) => (row.cells[0]?.textContent ?? "").trim().toLowerCase() === "total")
+          const sortable = rows.filter((row) => !totals.includes(row))
+          sortable.sort((left, right) => compareValues(sortValue(left.cells[column]), sortValue(right.cells[column]), direction) || Number(left.dataset.originalIndex) - Number(right.dataset.originalIndex))
+          body.replaceChildren(...sortable, ...totals)
+        })
+      })
+    })
+  })()
+</script>
+</body>
+</html>
