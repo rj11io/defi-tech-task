@@ -49,9 +49,8 @@ of concrete bugs found by actually using the app.
   exists and is used elsewhere on the same page. This was confirmed live in
   the browser, not just in the code.
 - The dependency lockfile still carries a critical and several high-severity
-  security warnings (flagged in
-  [`../security-dep-scan-report.md`](../security-dep-scan-report.md)) that
-  were not addressed.
+  security warnings (flagged in [`SECURITY.md`](SECURITY.md)) that were not
+  addressed.
 - No inline comments on non-obvious logic (the cents-conversion trick, for
   example), despite the task specifically asking for commented code.
 

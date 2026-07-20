@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security dependency scan report</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1c1e21;
+    --muted: #5b6270;
+    --border: #e3e6ea;
+    --card: #f7f8fa;
+    --accent: #2f5fd6;
+    --code-bg: #eef0f3;
+    --crit-bg: #fdeceb; --crit-fg: #9c2b23; --crit-bd: #f2c6c2;
+    --high-bg: #fdf1e6; --high-fg: #9a5a10; --high-bd: #f2d9b8;
+    --mod-bg:  #fdf7e0; --mod-fg:  #8a6d10; --mod-bd:  #eee1ad;
+    --low-bg:  #eaf3ec; --low-fg:  #2c6e42; --low-bd:  #c9e0cf;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171a;
+      --fg: #e7e9ec;
+      --muted: #a2a9b4;
+      --border: #2c2f34;
+      --card: #1d2024;
+      --accent: #7ea2ff;
+      --code-bg: #24272b;
+      --crit-bg: #3a2020; --crit-fg: #ff9d95; --crit-bd: #5c2c28;
+      --high-bg: #3a2c18; --high-fg: #ffbd7a; --high-bd: #5c4222;
+      --mod-bg:  #3a3418; --mod-fg:  #f0d878; --mod-bd:  #5c5122;
+      --low-bg:  #1c3324; --low-fg:  #7fd89c; --low-bd:  #2c5138;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+  }
+  h1 { font-size: 1.9rem; margin-bottom: 0.3rem; }
+  h2 {
+    font-size: 1.3rem;
+    margin-top: 2.6rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+    scroll-margin-top: 1.5rem;
+  }
+  h3 { font-size: 1.05rem; margin-top: 1.6rem; }
+  p { color: var(--fg); }
+  .lede { color: var(--muted); font-size: 0.95rem; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code {
+    background: var(--code-bg);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    font-size: 0.88em;
+  }
+  ul { padding-left: 1.3rem; }
+  li { margin-bottom: 0.45rem; }
+
+  .meta {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem 1.4rem;
+    margin: 1.2rem 0;
+    font-size: 0.92rem;
+  }
+  .meta ul { margin: 0; padding-left: 1.2rem; }
+  .meta li { margin-bottom: 0.3rem; }
+
+  nav.toc {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.4rem;
+    margin: 1.6rem 0 2.2rem;
+    font-size: 0.92rem;
+  }
+  nav.toc strong { display: block; margin-bottom: 0.5rem; }
+  nav.toc ol { margin: 0; padding-left: 1.3rem; columns: 2; column-gap: 2rem; }
+  nav.toc li { margin-bottom: 0.3rem; break-inside: avoid; }
+
+  .table-wrap {
+    overflow-x: auto;
+    margin: 1.2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  th, td {
+    border-bottom: 1px solid var(--border);
+    padding: 0.55rem 0.8rem;
+    text-align: left;
+    white-space: normal;
+  }
+  th {
+    background: var(--card);
+    position: sticky;
+    top: 0;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  .badge {
+    display: inline-block;
+    padding: 0.12rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .badge.crit { background: var(--crit-bg); color: var(--crit-fg); border-color: var(--crit-bd); }
+  .badge.high { background: var(--high-bg); color: var(--high-fg); border-color: var(--high-bd); }
+  .badge.mod  { background: var(--mod-bg);  color: var(--mod-fg);  border-color: var(--mod-bd); }
+  .badge.low  { background: var(--low-bg);  color: var(--low-fg);  border-color: var(--low-bd); }
+
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: var(--card);
+    border-radius: 0 8px 8px 0;
+    padding: 0.9rem 1.2rem;
+    margin: 1.2rem 0;
+  }
+  .callout p:first-child { margin-top: 0; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  ol.remediation { padding-left: 1.4rem; }
+  ol.remediation li { margin-bottom: 0.7rem; }
+  ol.remediation ul { margin-top: 0.4rem; }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+
+  footer {
+    margin-top: 3rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Security dependency scan report</h1>
+  <p class="lede">A read-only audit of this project's dependencies for known vulnerabilities and supply-chain risk — no code was run, nothing was installed.</p>
+
+  <div class="meta">
+    <ul>
+      <li>Project: <code>/Users/ricardojorge/Desktop/archive/2026/dump/tech-tasks/web-assessment</code></li>
+      <li>Scan timestamp: <code>2026-07-18T14:29:20+01:00</code></li>
+      <li>Scan mode: Read-only dependency and supply-chain audit</li>
+      <li>Skill workflow: <code>11ai-security-dep-scan</code></li>
+      <li>Tooling: Node.js <code>24.16.0</code>, npm <code>11.13.0</code>, Python <code>3.13.5</code>, npm audit service, OSV API</li>
+    </ul>
+  </div>
+
+  <nav class="toc">
+    <strong>On this page</strong>
+    <ol>
+      <li><a href="#executive-summary">Executive summary</a></li>
+      <li><a href="#critical-computer-harm-risks">Critical computer-harm risks</a></li>
+      <li><a href="#critical-vulnerability-findings">Critical vulnerability findings</a></li>
+      <li><a href="#authoritative-audit-totals">Authoritative audit totals</a></li>
+      <li><a href="#backend-findings">Backend findings</a></li>
+      <li><a href="#frontend-production-findings">Frontend production findings</a></li>
+      <li><a href="#additional-frontend-devbuild-findings">Frontend dev/build findings</a></li>
+      <li><a href="#direct-range-exposure">Direct range exposure</a></li>
+      <li><a href="#malware-source-and-provenance-review">Malware, source &amp; provenance</a></li>
+      <li><a href="#install-time-hooks-and-native-code-signals">Install-time hooks &amp; native code</a></li>
+      <li><a href="#remediation-order">Remediation order</a></li>
+      <li><a href="#coverage-limitations">Coverage limitations</a></li>
+      <li><a href="#scan-safety-and-repository-state">Scan safety &amp; repo state</a></li>
+      <li><a href="#llm-cost-analysis">LLM cost analysis</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="executive-summary">Executive summary</h2>
+  <p>
+    This project was not identified as malware, but the frontend lockfile
+    should not be installed unchanged. It contains one critical production
+    dependency, <code>form-data@4.0.0</code>, and several high-severity
+    dependencies.
+  </p>
+  <p>
+    No confirmed dependency was found that currently compromises the
+    developer's machine during installation. No machine isolation or secret
+    rotation is warranted solely from these findings.
+  </p>
+  <p>The scan covered:</p>
+  <ul>
+    <li>2 npm applications: <code>Api</code> and <code>FrontEnd</code>.</li>
+    <li>2 manifests and 2 npm lockfiles.</li>
+    <li>75 direct dependency declarations across 69 distinct package/range pairs.</li>
+    <li>1,373 lockfile entries representing 1,135 unique package/version pairs.</li>
+    <li>All 644 currently published versions permitted by the direct semver ranges.</li>
+    <li>Full dependency and production-only npm audits for both applications.</li>
+    <li>OSV vulnerability and malware queries for exact locked versions and direct range-permitted versions.</li>
+    <li>Lockfile source, integrity, lifecycle-hook, native-binary, and registry checks.</li>
+  </ul>
+  <p>
+    There was no installed <code>node_modules</code> tree. Findings are
+    therefore classified as locked/resolvable or requested-but-unselected,
+    not confirmed installed.
+  </p>
+
+  <h2 id="critical-computer-harm-risks">Critical computer-harm risks</h2>
+  <p>
+    No confirmed install-time malware, credential stealer, persistence
+    mechanism, destructive package, or arbitrary host-command execution
+    vulnerability was found.
+  </p>
+  <p>
+    The scan returned no OpenSSF/OSV <code>MAL-*</code> record for any exact
+    locked version or direct range-permitted version. Absence from advisory
+    databases is not absolute proof of safety; unpublished or newly
+    introduced malware may not yet be indexed.
+  </p>
+
+  <h2 id="critical-vulnerability-findings">Critical vulnerability findings</h2>
+
+  <h3>1. Locked frontend <code>form-data@4.0.0</code> <span class="badge crit">Critical</span></h3>
+  <div class="table-wrap">
+    <table>
+      <tbody>
+        <tr><td>Advisory severity</td><td>Critical</td></tr>
+        <tr><td>Package</td><td><code>form-data</code></td></tr>
+        <tr><td>Status</td><td>Locked/resolvable; no installed tree</td></tr>
+        <tr><td>Direct/transitive</td><td>Transitive production dependency of <code>axios@1.7.2</code></td></tr>
+        <tr><td>Manifest request</td><td><code>axios: ^1.7.2</code></td></tr>
+        <tr><td>Locked Axios</td><td><code>1.7.2</code></td></tr>
+        <tr><td>Locked form-data</td><td><code>4.0.0</code></td></tr>
+        <tr><td>Advisory</td><td><code>GHSA-fjxv-7rqg-78g4</code> / <code>CVE-2025-7783</code></td></tr>
+        <tr><td>Affected range</td><td><code>&gt;=4.0.0 &lt;4.0.4</code></td></tr>
+        <tr><td>Additional advisory</td><td><code>GHSA-hmw2-7cc7-3qxx</code> / <code>CVE-2026-12143</code>, high severity through <code>4.0.5</code></td></tr>
+        <tr><td>Safe target</td><td><code>form-data &gt;=4.0.6</code></td></tr>
+        <tr><td>Recommended parent target</td><td><code>axios@1.18.1</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    The critical issue uses predictable multipart boundaries. Exploitation
+    requires an attacker to observe relevant <code>Math.random()</code>
+    output and control data included in an outbound multipart request. This
+    may allow injected parameters or requests to internal systems.
+  </p>
+  <p>
+    The newer high-severity advisory permits CRLF/field injection when an
+    application uses untrusted multipart field names or filenames.
+  </p>
+  <p>
+    Reachability is reduced in this repository. Axios is imported by
+    browser-side frontend code, and Axios's browser mapping excludes its
+    Node HTTP adapter and Node <code>form-data</code> implementation. No
+    direct <code>form-data</code> import was found. The vulnerable package
+    remains present in the production lock graph and must be removed even
+    though normal browser-runtime exploitation was not reproduced.
+  </p>
+  <p>Sources:</p>
+  <ul>
+    <li><a href="https://github.com/advisories/GHSA-fjxv-7rqg-78g4">github.com/advisories/GHSA-fjxv-7rqg-78g4</a></li>
+    <li><a href="https://github.com/form-data/form-data/security/advisories/GHSA-hmw2-7cc7-3qxx">form-data security advisory GHSA-hmw2-7cc7-3qxx</a></li>
+    <li><code>FrontEnd/package.json:25</code></li>
+    <li><code>FrontEnd/package-lock.json:1947</code></li>
+    <li><code>FrontEnd/package-lock.json:3464</code></li>
+  </ul>
+
+  <h3>2. Critical Mongoose versions permitted but not selected <span class="badge crit">Critical</span></h3>
+  <div class="table-wrap">
+    <table>
+      <tbody>
+        <tr><td>Advisory severity</td><td>Critical, CVSS 9.0</td></tr>
+        <tr><td>Package</td><td><code>mongoose</code></td></tr>
+        <tr><td>Status</td><td>Requested but vulnerable versions are not selected by the lockfile</td></tr>
+        <tr><td>Direct/transitive</td><td>Direct production dependency</td></tr>
+        <tr><td>Manifest request</td><td><code>^8.4.3</code></td></tr>
+        <tr><td>Critical permitted versions</td><td><code>8.4.3</code> through <code>8.9.4</code> (28 published versions)</td></tr>
+        <tr><td>Locked version</td><td><code>8.24.1</code>, not affected</td></tr>
+        <tr><td>Advisory</td><td><code>GHSA-vg7j-7cwx-8wgw</code> / <code>CVE-2025-23061</code></td></tr>
+        <tr><td>Critical fix</td><td><code>8.9.5</code></td></tr>
+        <tr><td>Recommended target</td><td>Preserve <code>8.24.1</code> or later</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    The advisory concerns improper <code>$where</code> handling that can
+    execute JavaScript in MongoDB queries and lead to unauthorized data
+    access or manipulation. No <code>$where</code> use was found in project
+    source. The exact locked version was checked against OSV and was not
+    affected.
+  </p>
+  <p>Source: <a href="https://github.com/advisories/GHSA-vg7j-7cwx-8wgw">github.com/advisories/GHSA-vg7j-7cwx-8wgw</a></p>
+
+  <h2 id="authoritative-audit-totals">Authoritative audit totals</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Project and scope</th><th>Critical</th><th>High</th><th>Moderate</th><th>Low</th><th>Total</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>API, full graph</td><td>0</td><td>0</td><td>3</td><td>0</td><td>3</td></tr>
+        <tr><td>API, production only</td><td>0</td><td>0</td><td>3</td><td>0</td><td>3</td></tr>
+        <tr><td>Frontend, full graph</td><td>1</td><td>12</td><td>13</td><td>1</td><td>27</td></tr>
+        <tr><td>Frontend, production only</td><td>1</td><td>5</td><td>4</td><td>0</td><td>10</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    The npm audit commands were run with <code>--package-lock-only</code>;
+    one full-graph and one <code>--omit=dev</code> audit was performed for
+    each lockfile. A non-zero audit exit status represented findings, not
+    scanner failure.
+  </p>
+
+  <h2 id="backend-findings">Backend findings</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Severity</th><th>Package</th><th>Direct</th><th>Manifest request</th><th>Locked version</th><th>Advisory/range</th><th>Fixed or recommended</th><th>Impact/action</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="badge mod">Moderate</span></td><td><code>pm2</code></td><td>Yes, production</td><td><code>^5.4.0</code></td><td><code>5.4.3</code></td><td><code>GHSA-x5gf-qvw8-r2rm</code>, <code>&lt;7.0.0</code>; aggregate affected through <code>7.0.1</code> because of transitive <code>js-yaml</code></td><td><code>7.0.3</code></td><td>Upgrade PM2; major-version compatibility review required.</td></tr>
+        <tr><td><span class="badge mod">Moderate</span></td><td><code>js-yaml</code></td><td>No, through PM2</td><td>PM2 dependency</td><td><code>4.1.1</code></td><td><code>GHSA-h67p-54hq-rp68</code>, <code>4.0.0-4.1.1</code></td><td>Resolved by PM2 <code>7.0.3</code>; safe standalone target <code>4.3.0</code></td><td>Quadratic-complexity denial of service with crafted aliases.</td></tr>
+        <tr><td><span class="badge mod">Moderate</span></td><td><code>uuid</code></td><td>Yes, production</td><td><code>^9.0.1</code></td><td><code>9.0.1</code></td><td><code>GHSA-w5hq-g745-h8pq</code>, <code>&lt;11.1.1</code></td><td><code>14.0.1</code></td><td>Missing buffer bounds validation in selected UUID functions.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    No backend high or critical exact-version vulnerability was returned.
+    The backend locks safe versions of Axios (<code>1.18.1</code>), Mongoose
+    (<code>8.24.1</code>), form-data (<code>4.0.6</code>), lodash
+    (<code>4.18.1</code>), and other current transitive packages.
+  </p>
+
+  <h2 id="frontend-production-findings">Frontend production findings</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Severity</th><th>Package</th><th>Direct</th><th>Manifest request</th><th>Locked version</th><th>Fixed or recommended</th><th>Impact/action</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="badge crit">Critical</span></td><td><code>form-data</code></td><td>No, through Axios</td><td>Axios <code>^1.7.2</code></td><td><code>4.0.0</code></td><td><code>4.0.6</code></td><td>Multipart boundary and CRLF/field injection; resolve through Axios upgrade.</td></tr>
+        <tr><td><span class="badge high">High</span></td><td><code>axios</code></td><td>Yes</td><td><code>^1.7.2</code></td><td><code>1.7.2</code></td><td><code>1.18.1</code></td><td>Multiple SSRF, credential leakage, prototype-pollution gadget, response/request hijacking, and denial-of-service advisories. Browser reachability varies by advisory.</td></tr>
+        <tr><td><span class="badge high">High</span></td><td><code>@remix-run/router</code></td><td>No</td><td>React Router DOM dependency</td><td><code>1.16.1</code></td><td><code>1.23.2</code></td><td>XSS via open redirects.</td></tr>
+        <tr><td><span class="badge high">High</span></td><td><code>react-router</code></td><td>No</td><td>React Router DOM dependency</td><td><code>6.23.1</code></td><td><code>6.30.4</code></td><td>Open redirect findings and inherited router vulnerability.</td></tr>
+        <tr><td><span class="badge high">High</span></td><td><code>react-router-dom</code></td><td>Yes</td><td><code>^6.23.1</code></td><td><code>6.23.1</code></td><td><code>6.30.4</code></td><td>Upgrade the direct dependency to resolve the router chain.</td></tr>
+        <tr><td><span class="badge high">High</span></td><td><code>lodash</code></td><td>No, through <code>subscribe-ui-event</code></td><td>Transitive</td><td><code>4.17.21</code></td><td><code>4.18.1</code></td><td>Code injection through unsafe <code>_.template</code> imports plus prototype-pollution advisories. No project use of <code>_.template</code> was found.</td></tr>
+        <tr><td><span class="badge mod">Moderate</span></td><td><code>@babel/runtime</code></td><td>No</td><td>Transitive</td><td><code>7.24.7</code></td><td><code>&gt;=7.26.10</code></td><td>Inefficient regular expression in generated code.</td></tr>
+        <tr><td><span class="badge mod">Moderate</span></td><td><code>follow-redirects</code></td><td>No, through Axios</td><td>Transitive</td><td><code>1.15.6</code></td><td><code>1.16.0</code></td><td>Authentication headers can leak across cross-domain redirects.</td></tr>
+        <tr><td><span class="badge mod">Moderate</span></td><td><code>i18next-http-backend</code></td><td>Yes</td><td><code>^2.5.2</code></td><td><code>2.5.2</code></td><td><code>4.0.0</code></td><td>Path traversal and URL injection via unsanitized language/namespace values.</td></tr>
+        <tr><td><span class="badge mod">Moderate</span></td><td><code>uuid</code></td><td>Yes</td><td><code>^9.0.1</code></td><td><code>9.0.1</code></td><td><code>14.0.1</code></td><td>Missing buffer bounds validation.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="additional-frontend-devbuild-findings">Additional frontend development/build findings</h2>
+  <p>
+    These packages are not in the production-only audit, but they execute or
+    process input on developer workstations and CI and therefore still
+    require remediation.
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Severity</th><th>Package</th><th>Locked version(s)</th><th>Minimum safe/recommended direction</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="badge high">High</span></td><td><code>cross-spawn</code></td><td><code>7.0.3</code></td><td><code>7.0.6</code>; update ESLint/build parents.</td></tr>
+        <tr><td><span class="badge high">High</span></td><td><code>flatted</code></td><td><code>3.3.1</code></td><td><code>3.4.2</code>; update flat-cache/Stylelint parents.</td></tr>
+        <tr><td><span class="badge high">High</span></td><td><code>glob</code></td><td><code>10.4.1</code></td><td><code>10.5.0</code> or <code>11.1.0</code>; update Tailwind/Sucrase parent.</td></tr>
+        <tr><td><span class="badge high">High</span></td><td><code>minimatch</code></td><td><code>3.1.2</code>, <code>9.0.4</code></td><td><code>3.1.4+</code>, <code>9.0.7+</code>; update parent tooling.</td></tr>
+        <tr><td><span class="badge high">High</span></td><td><code>picomatch</code></td><td><code>2.3.1</code></td><td><code>2.3.2+</code>; update parent tooling.</td></tr>
+        <tr><td><span class="badge high">High</span></td><td><code>rollup</code></td><td><code>2.79.1</code>, <code>3.29.4</code></td><td><code>2.80.0+</code>, <code>3.30.0+</code>; upgrade Vite and remove/replace <code>vite-plugin-eslint</code>.</td></tr>
+        <tr><td><span class="badge high">High</span></td><td><code>vite</code></td><td><code>4.5.3</code></td><td><code>6.4.3</code> or a later compatible release. Every currently published version allowed by <code>^4.2.1</code> has at least one known advisory.</td></tr>
+        <tr><td><span class="badge mod">Moderate</span></td><td><code>@babel/helpers</code></td><td><code>7.24.7</code></td><td><code>7.26.10+</code></td></tr>
+        <tr><td><span class="badge mod">Moderate</span></td><td><code>ajv</code></td><td><code>6.12.6</code>, <code>8.16.0</code></td><td><code>6.14.0+</code>, <code>8.18.0+</code></td></tr>
+        <tr><td><span class="badge mod">Moderate</span></td><td><code>brace-expansion</code></td><td><code>1.1.11</code>, <code>2.0.1</code></td><td><code>1.1.13+</code>, <code>2.0.3+</code></td></tr>
+        <tr><td><span class="badge mod">Moderate</span></td><td><code>esbuild</code></td><td><code>0.18.20</code></td><td>Resolve through Vite upgrade.</td></tr>
+        <tr><td><span class="badge mod">Moderate</span></td><td><code>js-yaml</code></td><td><code>4.1.0</code></td><td><code>4.3.0</code></td></tr>
+        <tr><td><span class="badge mod">Moderate</span></td><td><code>micromatch</code></td><td><code>4.0.7</code></td><td><code>4.0.8+</code></td></tr>
+        <tr><td><span class="badge mod">Moderate</span></td><td><code>nanoid</code></td><td><code>3.3.7</code></td><td><code>3.3.8+</code></td></tr>
+        <tr><td><span class="badge mod">Moderate</span></td><td><code>postcss</code></td><td><code>8.4.38</code></td><td><code>8.5.19</code></td></tr>
+        <tr><td><span class="badge mod">Moderate</span></td><td><code>yaml</code></td><td><code>2.4.5</code></td><td><code>2.8.3+</code></td></tr>
+        <tr><td><span class="badge low">Low</span></td><td><code>@babel/core</code></td><td><code>7.24.7</code></td><td>Current safe target <code>7.29.7</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="direct-range-exposure">Direct range exposure</h2>
+  <p>
+    The scan enumerated every currently published version accepted by each
+    direct semver range. The following ranges contain one or more versions
+    with known advisories:
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Package range</th><th>Published versions allowed</th><th>Versions with advisories</th><th>First allowed version without an OSV match</th><th>Latest allowed version checked</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>ajv ^8.16.0</code></td><td>4</td><td>2</td><td><code>8.18.0</code></td><td><code>8.20.0</code></td></tr>
+        <tr><td><code>axios ^1.7.2</code></td><td>35</td><td>30</td><td><code>1.16.0</code></td><td><code>1.18.1</code></td></tr>
+        <tr><td><code>express ^4.19.2</code></td><td>8</td><td>1</td><td><code>4.20.0</code></td><td><code>4.22.2</code></td></tr>
+        <tr><td><code>i18next-http-backend ^2.5.2</code></td><td>8</td><td>8</td><td>None in the declared major</td><td><code>2.7.3</code></td></tr>
+        <tr><td><code>lodash ^4.17.21</code></td><td>4</td><td>2</td><td><code>4.18.0</code></td><td><code>4.18.1</code></td></tr>
+        <tr><td><code>mongoose ^8.4.3</code></td><td>80</td><td>75</td><td><code>8.22.1</code> when considering all matched advisories</td><td><code>8.24.1</code></td></tr>
+        <tr><td><code>path-to-regexp ^6.2.2</code></td><td>2</td><td>1</td><td><code>6.3.0</code></td><td><code>6.3.0</code></td></tr>
+        <tr><td><code>pm2 ^5.4.0</code></td><td>4</td><td>4</td><td>None in the declared major</td><td><code>5.4.3</code></td></tr>
+        <tr><td><code>postcss ^8.4.38</code></td><td>32</td><td>22</td><td><code>8.5.10</code></td><td><code>8.5.19</code></td></tr>
+        <tr><td><code>uuid ^9.0.1</code></td><td>1</td><td>1</td><td>None in the declared major</td><td><code>9.0.1</code></td></tr>
+        <tr><td><code>vite ^4.2.1</code></td><td>40</td><td>40</td><td>None in the declared major</td><td><code>4.5.14</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    The regular <code>npm ci</code> workflow uses the exact lockfile
+    versions. Range exposure becomes relevant when a lockfile is
+    regenerated, removed, or dependencies are updated.
+  </p>
+
+  <h2 id="malware-source-and-provenance-review">Malware, source, and provenance review</h2>
+  <ul>
+    <li>No <code>MAL-*</code> OSV record matched.</li>
+    <li>No npm audit malware advisory matched.</li>
+    <li>Every lockfile tarball uses <code>https://registry.npmjs.org/</code>.</li>
+    <li>Every non-root lock entry has an integrity hash.</li>
+    <li>No Git, plain HTTP, local-path, private-registry, or foreign-host dependency source was found.</li>
+    <li>No <code>.npmrc</code>, Yarn configuration, pnpm workspace, or private registry setting was present.</li>
+    <li>There were no installed packages to compare with the lockfile or to verify with <code>npm audit signatures</code>.</li>
+  </ul>
+  <p>Relevant databases and documentation:</p>
+  <ul>
+    <li><a href="https://google.github.io/osv.dev/post-v1-querybatch/">OSV batch API</a></li>
+    <li><a href="https://github.com/ossf/malicious-packages">OpenSSF malicious package reports</a></li>
+    <li><a href="https://docs.npmjs.com/reporting-malware-in-an-npm-package/">npm malware reporting and response</a></li>
+    <li><a href="https://docs.npmjs.com/cli/v11/commands/npm-audit/">npm audit behavior</a></li>
+  </ul>
+
+  <h2 id="install-time-hooks-and-native-code-signals">Install-time hooks and native-code signals</h2>
+  <p>
+    Seven unique hook/native packages occurred in eight lockfile locations.
+    Their registry tarballs were downloaded as inert data only, SHA-512
+    checked against the lockfile, and inspected as text. All seven integrity
+    checks matched.
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Package</th><th>Scope/parent</th><th>Observed behavior</th><th>Classification</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>@scarf/scarf@1.4.0</code></td><td>API, through <code>swagger-ui-dist</code></td><td>Postinstall runs <code>report.js</code>, invokes <code>npm ls</code> and Git commands, may contact <code>scarf.sh</code>, and writes a rate-limit file under the OS temp directory. It can interactively persist preferences to the root package manifest.</td><td>Telemetry/execution exposure; not confirmed malware. Disable with <code>SCARF_ANALYTICS=false</code>, <code>SCARF_NO_ANALYTICS=true</code>, or <code>DO_NOT_TRACK=1</code>.</td></tr>
+        <tr><td><code>esbuild@0.18.20</code></td><td>Frontend, through Vite</td><td>Postinstall selects, downloads if necessary, writes, and executes a platform-specific native binary. The direct fallback registry download in this version does not independently validate a content hash.</td><td>Legitimate but material host-code execution exposure. Upgrade through Vite.</td></tr>
+        <tr><td>Font Awesome packages <code>6.5.2</code></td><td>Frontend direct/transitive</td><td>Three postinstall scripts only print license and attribution text.</td><td>Low-risk informational hooks.</td></tr>
+        <tr><td><code>core-js@3.37.1</code></td><td>Frontend, through <code>react-stickynode</code></td><td>Prints a funding banner and writes a temporary banner-throttle file.</td><td>Low-risk local side effect.</td></tr>
+        <tr><td><code>fsevents@2.3.3</code></td><td>Optional dependency in both graphs</td><td>Tarball contains a precompiled macOS <code>fsevents.node</code> native binary. The embedded tarball manifest contains no install lifecycle command, despite the lockfile's <code>hasInstallScript</code> signal.</td><td>Native binary exposure; no malicious behavior confirmed.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    The current esbuild project later added integrity validation to its
+    fallback download path:
+    <a href="https://github.com/evanw/esbuild/releases">github.com/evanw/esbuild/releases</a>
+  </p>
+
+  <h2 id="remediation-order">Remediation order</h2>
+  <ol class="remediation">
+    <li>Do not run a normal frontend install from the current lockfile before review.</li>
+    <li>In a disposable clean container, update <code>FrontEnd/package.json</code> and regenerate the lockfile with lifecycle scripts initially disabled.</li>
+    <li>Set or resolve at least:
+      <ul>
+        <li><code>axios@1.18.1</code>, yielding <code>form-data@4.0.6</code>.</li>
+        <li><code>react-router-dom@6.30.4</code> and <code>@remix-run/router@1.23.2</code>.</li>
+        <li><code>i18next-http-backend@4.0.0</code>.</li>
+        <li><code>uuid@14.0.1</code>.</li>
+        <li><code>postcss@8.5.19</code>.</li>
+        <li><code>vite@6.4.3</code> or later.</li>
+        <li><code>lodash@4.18.1</code> through a parent update or reviewed override.</li>
+      </ul>
+    </li>
+    <li>Update ESLint, Tailwind, Stylelint and related build tools. Remove or replace <code>vite-plugin-eslint</code> if it continues to retain obsolete Rollup versions.</li>
+    <li>Upgrade backend PM2 to <code>7.0.3</code> and UUID to <code>14.0.1</code>.</li>
+    <li>Preserve backend Mongoose at <code>8.24.1</code> or later.</li>
+    <li>Re-run full and production-only audits after regeneration and inspect every changed lifecycle script and tarball source.</li>
+  </ol>
+  <div class="callout">
+    <p>
+      Do not use <code>npm audit fix</code> as the first remediation step.
+      It performs dependency resolution/installation and may execute
+      lifecycle scripts. Review and update the dependency graph explicitly.
+    </p>
+  </div>
+  <p>
+    The proposed direct remediation targets were individually queried
+    against OSV at scan time and returned no known vulnerability records:
+  </p>
+  <ul>
+    <li><code>axios@1.18.1</code></li>
+    <li><code>form-data@4.0.6</code></li>
+    <li><code>mongoose@8.24.1</code></li>
+    <li><code>pm2@7.0.3</code></li>
+    <li><code>uuid@14.0.1</code></li>
+    <li><code>react-router-dom@6.30.4</code></li>
+    <li><code>@remix-run/router@1.23.2</code></li>
+    <li><code>lodash@4.18.1</code></li>
+    <li><code>i18next-http-backend@4.0.0</code></li>
+    <li><code>postcss@8.5.19</code></li>
+    <li><code>vite@6.4.3</code></li>
+  </ul>
+
+  <h2 id="coverage-limitations">Coverage limitations</h2>
+  <ul>
+    <li><code>node_modules</code> was absent, so installed versions, installed source drift, runtime tampering, and local persistence could not be checked.</li>
+    <li>npm signature/provenance verification requires an installed dependency tree and was not run.</li>
+    <li>The exact transitive graph was checked from both lockfiles. The 644 possible version analysis covers every published version allowed by direct manifest ranges, but it does not construct every combinatorial transitive graph that could result from regenerating the lockfiles at different times.</li>
+    <li>Advisory and malware databases describe known reports only. Zero matches do not exclude an unpublished, newly compromised, or highly targeted package.</li>
+    <li>Reachability was assessed through static project-source and package-metadata inspection. No application or dependency code was executed.</li>
+  </ul>
+
+  <h2 id="scan-safety-and-repository-state">Scan safety and repository state</h2>
+  <p>
+    No dependency installation, lifecycle script, package binary,
+    application, build, test suite, or automatic remediation command was
+    executed. The original scan made no project changes; this report is the
+    only file subsequently added at the user's request.
+  </p>
+
+  <hr>
+
+  <h2 id="llm-cost-analysis">LLM cost analysis</h2>
+  <p class="lede">Generated 2026-07-18T13:50:23.179Z · Root: <code>.</code> · Prices are USD per 1M tokens unless noted</p>
+
+  <h3>Executive summary</h3>
+  <div class="table-wrap">
+    <table>
+      <tbody>
+        <tr><td>Threads recognized</td><td>1</td></tr>
+        <tr><td>Threads with measured tokens</td><td>1 / 1</td></tr>
+        <tr><td>Threads with derived cost</td><td>1 / 1</td></tr>
+        <tr><td>Threads with reported-only cost</td><td>0</td></tr>
+        <tr><td>Threads with unavailable or partial cost</td><td>0</td></tr>
+        <tr><td>Measured/provider tokens</td><td>10,211,467</td></tr>
+        <tr><td>Known cost</td><td>$8.1712</td></tr>
+        <tr><td>Cost coverage</td><td>100.0%</td></tr>
+        <tr><td>Input tokens</td><td>10,153,571</td></tr>
+        <tr><td>Cached input</td><td>9,851,904 (97.0%)</td></tr>
+        <tr><td>Output tokens</td><td>57,896</td></tr>
+        <tr><td>Reasoning output</td><td>18,402 (31.8%)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    The known-cost total includes derived API-equivalent prices and
+    harness-reported costs. It is not necessarily an invoice, especially for
+    subscription, enterprise, batch, priority, or negotiated usage.
+  </p>
+
+  <h3>Cost by provider</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Provider</th><th>Threads</th><th>Known tokens</th><th>Known cost</th><th>Priced</th><th>Unpriced</th></tr></thead>
+      <tbody><tr><td>openai</td><td>1</td><td>10,211,467</td><td>$8.1712</td><td>1</td><td>0</td></tr></tbody>
+    </table>
+  </div>
+
+  <h3>Cost by model</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Provider / model</th><th>Threads</th><th>Input</th><th>Cached</th><th>Output</th><th>Tokens</th><th>Cost</th></tr></thead>
+      <tbody><tr><td>openai / gpt-5.6-sol</td><td>1</td><td>10,153,571</td><td>9,851,904</td><td>57,896</td><td>10,211,467</td><td>$8.1712</td></tr></tbody>
+    </table>
+  </div>
+
+  <h3>Cost by root and child folder</h3>
+  <p>The folder is the direct child of the scanned root; files directly in the root are grouped as <code>.</code>.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Folder</th><th>Threads</th><th>Tokens</th><th>Known cost</th><th>Priced</th><th>Unpriced</th></tr></thead>
+      <tbody><tr><td>.</td><td>1</td><td>10,211,467</td><td>$8.1712</td><td>1</td><td>0</td></tr></tbody>
+    </table>
+  </div>
+
+  <h3>Token composition</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Token class</th><th>Tokens</th><th>Share of available total</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>Uncached input</td><td>301,667</td><td>3.0%</td><td>Input billed at the base input rate</td></tr>
+        <tr><td>Cached input read</td><td>9,851,904</td><td>97.0%</td><td>Provider cache-hit tokens</td></tr>
+        <tr><td>5-minute cache write</td><td>0</td><td>n/a</td><td>Anthropic-style ephemeral cache writes</td></tr>
+        <tr><td>1-hour cache write</td><td>0</td><td>n/a</td><td>Anthropic-style extended cache writes</td></tr>
+        <tr><td>Output</td><td>57,896</td><td>0.6%</td><td>Generated output, including reasoning where exposed</td></tr>
+        <tr><td>Reasoning output</td><td>18,402</td><td>31.8%</td><td>Subset of output, never added twice</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    Security scan by <a href="https://ai.rj11.io/skills/11ai-security-dep-scan">11ai-security-dep-scan</a>;
+    LLM token cost analysis by <a href="https://ai.rj11.io/skills/11ai-llm-cost">11ai-llm-cost</a>.
+    <br>rj11io/SECURITY.html
+  </footer>
+</main>
+</body>
+</html>

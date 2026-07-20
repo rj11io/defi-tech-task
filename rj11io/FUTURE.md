@@ -73,9 +73,8 @@ fit for a Vite app).
 
 ## 6. Clear the outstanding dependency warnings
 
-The dependency security scan in this repo
-([`../security-dep-scan-report.md`](../security-dep-scan-report.md)) flags a
-critical and several high-severity issues in the frontend's locked
+The dependency security scan in this repo ([`SECURITY.md`](SECURITY.md))
+flags a critical and several high-severity issues in the frontend's locked
 dependencies (`form-data`, `react-router`). These predate both pull requests
 — they come from the original starter template — but they're worth clearing
 out before this becomes a real project rather than a take-home exercise.

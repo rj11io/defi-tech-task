@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How this repository was built</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1c1e21;
+    --muted: #5b6270;
+    --border: #e3e6ea;
+    --card: #f7f8fa;
+    --accent: #2f5fd6;
+    --code-bg: #eef0f3;
+    --num-bg: #2f5fd6;
+    --num-fg: #ffffff;
+    --good-bg: #eaf3ec; --good-fg: #2c6e42; --good-bd: #c9e0cf;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171a;
+      --fg: #e7e9ec;
+      --muted: #a2a9b4;
+      --border: #2c2f34;
+      --card: #1d2024;
+      --accent: #7ea2ff;
+      --code-bg: #24272b;
+      --num-bg: #7ea2ff;
+      --num-fg: #15171a;
+      --good-bg: #1c3324; --good-fg: #7fd89c; --good-bd: #2c5138;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+  }
+  h1 { font-size: 1.9rem; margin-bottom: 0.4rem; }
+  .lede { color: var(--muted); font-size: 1.05rem; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code {
+    background: var(--code-bg);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+  ul, ol { padding-left: 1.3rem; }
+  li { margin-bottom: 0.5rem; }
+
+  .step {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.4rem 1.6rem;
+    margin: 1.4rem 0;
+    background: var(--card);
+  }
+  .step h2 {
+    font-size: 1.15rem;
+    margin: 0 0 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 50%;
+    background: var(--num-bg);
+    color: var(--num-fg);
+    font-size: 0.95rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .step p { margin: 0.6rem 0; }
+  .step ol, .step ul { margin: 0.6rem 0; }
+
+  .table-wrap {
+    overflow-x: auto;
+    margin: 0.8rem 0 0.2rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  table {
+    width: 100%;
+    min-width: 480px;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    background: var(--bg);
+  }
+  th, td {
+    border-bottom: 1px solid var(--border);
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: var(--card); }
+  tr:last-child td { border-bottom: none; }
+
+  .fixlist {
+    background: var(--good-bg);
+    border: 1px solid var(--good-bd);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin: 0.8rem 0;
+    color: var(--fg);
+  }
+  .fixlist li { margin-bottom: 0.7rem; }
+  .fixlist li:last-child { margin-bottom: 0; }
+  .fixlist strong { color: var(--good-fg); }
+
+  .result {
+    margin-top: 0.9rem;
+    padding-top: 0.9rem;
+    border-top: 1px dashed var(--border);
+    font-weight: 600;
+  }
+
+  footer {
+    margin-top: 3rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>How this repository was built</h1>
+  <p class="lede">
+    This is the step-by-step log of everything that was done to turn the
+    bare starter template into the finished, judged submission in this repo
+    — from the first security check, through fixing what the template got
+    wrong, to having two AI models build the feature independently and a
+    third one judge the results.
+  </p>
+
+  <div class="step">
+    <h2><span class="num">1</span> Checked the template for security problems before installing anything</h2>
+    <p>
+      Before running a single <code>npm install</code>, the repository was
+      cloned and scanned for known vulnerabilities and supply-chain risk in
+      its dependencies — using the
+      <a href="https://ai.rj11.io/skills/11ai-security-dep-scan"><code>11ai-security-dep-scan</code></a>
+      skill. Nothing was installed or executed during this pass; it only
+      reads manifests and lockfiles and checks them against public
+      vulnerability databases. The results are in
+      <a href="SECURITY.html">SECURITY.md</a>.
+    </p>
+  </div>
+
+  <div class="step">
+    <h2><span class="num">2</span> Checked what that scan cost</h2>
+    <p>
+      Every step in this pipeline runs through an AI model, and AI usage has
+      a real cost in tokens (the units an AI model is billed by) and
+      dollars. The <a href="https://ai.rj11.io/plugins/llm-costs"><code>llm-costs</code></a>
+      plugin measured what the security scan itself cost, before moving on
+      to the rest of the work.
+    </p>
+  </div>
+
+  <div class="step">
+    <h2><span class="num">3</span> Set up the toolbox</h2>
+    <p>
+      The repository was initialized with a suite of AI skills and plugins
+      — pre-built playbooks that give the AI assistant a reliable, repeatable
+      way to do common tasks instead of improvising each time:
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tool</th><th>What it's for</th></tr></thead>
+        <tbody>
+          <tr><td><a href="https://ai.rj11.io/plugins/llm-costs"><code>llm-costs</code></a></td><td>Tracks how many tokens and how much money each AI session uses.</td></tr>
+          <tr><td><a href="https://ai.rj11.io/skills/11ai-modern-clean-ui"><code>11ai-modern-clean-ui</code></a></td><td>Guidance for building interfaces in the clean, minimal style used by products like Linear and Vercel.</td></tr>
+          <tr><td><a href="https://ai.rj11.io/skills/11ai-automated-releases"><code>11ai-automated-releases</code></a></td><td>Sets up automatic version numbers and changelogs generated from commit messages.</td></tr>
+          <tr><td><a href="https://ai.rj11.io/plugins/aws-operations"><code>aws-operations</code></a></td><td>Playbooks for common AWS cloud tasks, with safety checks before anything risky.</td></tr>
+          <tr><td><a href="https://ai.rj11.io/plugins/docker-operations"><code>docker-operations</code></a></td><td>Playbooks for building, running, and cleaning up Docker containers (self-contained boxes that run the app the same way on any machine).</td></tr>
+          <tr><td><a href="https://ai.rj11.io/plugins/antdesign-operations"><code>antdesign-operations</code></a></td><td>Reference guides for Ant Design, the component library the frontend is built with.</td></tr>
+          <tr><td><a href="https://ai.rj11.io/plugins/git-operations"><code>git-operations</code></a></td><td>Playbooks for everyday Git tasks — branches, commits, stashing, recovering lost work — with safety checks before anything destructive.</td></tr>
+          <tr><td><a href="https://ai.rj11.io/plugins/jest-operations"><code>jest-operations</code></a></td><td>Playbooks for running and debugging the project's automated tests.</td></tr>
+          <tr><td><a href="https://ai.rj11.io/plugins/mongodb-operations"><code>mongodb-operations</code></a></td><td>Playbooks for querying and maintaining the project's MongoDB database.</td></tr>
+          <tr><td><a href="https://ai.rj11.io/plugins/nodejs-api-operations"><code>nodejs-api-operations</code></a></td><td>Playbooks for building and testing the Node.js backend API.</td></tr>
+          <tr><td><a href="https://ai.rj11.io/plugins/security"><code>security</code></a></td><td>Playbooks for scanning dependencies and reviewing code for security issues.</td></tr>
+          <tr><td><a href="https://ai.rj11.io/skills/11ai-code-quality"><code>11ai-code-quality</code></a></td><td>A structured pass for cleaning up code — better names, less duplication, clearer comments.</td></tr>
+          <tr><td><a href="https://ai.rj11.io/plugins/super"><code>super</code></a></td><td>A bundle of broad clean-up passes — bug-fixing, performance, security, documentation, UX — run near the end of a task.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="step">
+    <h2><span class="num">4</span> Wrote the instructions the AI would follow</h2>
+    <p>
+      An <a href="../AGENTS.md"><code>AGENTS.md</code></a> file was written
+      at the root of the repo. This is the standing brief every AI assistant
+      working in this repo reads first — it says to build a well-structured,
+      Ant Design–themed app, to do a full polish pass (code quality, bugs,
+      UI, UX, performance, security) before calling anything done, to keep
+      new documentation in the <code>rj11io/</code> folder instead of
+      touching the original README, and to open a pull request with an
+      adversarial review from three separate reviewing passes before
+      wrapping up.
+    </p>
+  </div>
+
+  <div class="step">
+    <h2><span class="num">5</span> Set up automatic releases and changelogs</h2>
+    <p>
+      Using the automated-releases skill from step 3, the repo was wired so
+      that every commit written in the
+      <a href="https://www.conventionalcommits.org/">Conventional Commits</a>
+      style (a standard format like <code>fix: ...</code> or
+      <code>feat: ...</code>) automatically produces the right version bump
+      and a generated changelog entry, with no manual release step.
+    </p>
+  </div>
+
+  <div class="step">
+    <h2><span class="num">6</span> Ran the untouched starter template to see what actually worked</h2>
+    <p>
+      Before changing any code, the original template's own <code>Api</code>
+      and <code>FrontEnd</code> folders were installed with
+      <code>npm install</code>, its demo database was seeded, and the whole
+      thing was run in Docker — purely to observe its starting state with
+      fresh eyes, before any task-specific work began.
+    </p>
+  </div>
+
+  <div class="step">
+    <h2><span class="num">7</span> Found — and fixed — a template that didn't actually work</h2>
+    <p>
+      That inspection turned up a real problem: the starter template
+      reported a network error on login and its own test suite was broken
+      out of the box. Before any candidate work could begin, the following
+      had to be fixed:
+    </p>
+    <ul class="fixlist">
+      <li><strong>Replaced fake login data with a real one.</strong> The template's login was backed by mock data instead of real accounts. It now uses actual user records stored in MongoDB, real JWTs (JSON Web Tokens — a signed pass a server hands you after login that proves who you are without checking the database on every request), and refresh tokens that are actually saved, so a login survives a server restart instead of vanishing.</li>
+      <li><strong>Fixed the broken auth flows.</strong> The code that checks whether a request is logged in, plus the forgot-password, sign-up, and sign-in flows, were not working correctly and needed real fixes.</li>
+      <li><strong>Fixed Docker networking.</strong> The API container and the database container were failing to reach each other correctly inside Docker, and the environment settings controlling that connection were wrong.</li>
+      <li><strong>Fixed the demo-data scripts.</strong> The scripts that create the demo login user and reset the database were not setting things up correctly.</li>
+      <li><strong>Fixed a permissions bug.</strong> The role-based permission system (RBAC — the part of the app that decides what each user is allowed to do) was mixing up user and company IDs.</li>
+    </ul>
+    <p class="result">Verified: 140 / 140 backend tests pass, and the frontend builds successfully.</p>
+  </div>
+
+  <div class="step">
+    <h2><span class="num">8</span> Built the feature twice, independently, with two AI models</h2>
+    <p>
+      With a genuinely working starting point, a separate Git branch was
+      created for each of two AI model configurations:
+    </p>
+    <ol>
+      <li><code>codex-gpt5.6-sol-high/complete-tech-task</code></li>
+      <li><code>codex-gpt5.6-luna-high/complete-tech-task</code></li>
+    </ol>
+    <p>
+      Each one was given the identical instruction —
+      <em>"review the codebase and follow the instructions on
+      <code>AGENTS.md</code> to complete the tech task"</em> — and worked
+      completely independently, with no visibility into what the other one
+      produced. Each opened its own pull request.
+    </p>
+  </div>
+
+  <div class="step">
+    <h2><span class="num">9</span> Had a third AI model judge both results</h2>
+    <p>
+      Claude Sonnet 5, run at high reasoning effort, was asked to
+      <em>"review the codebase and both open PRs and judge and score them
+      based on tech task implementation, UI/UX, code quality, style and
+      design, and which one would you choose to merge. Also write what
+      would be your immediate improvements for the near future."</em>
+    </p>
+    <p>
+      That review read every changed file in both branches, ran each
+      branch's own test suite, and used both apps live in a browser before
+      scoring them and picking a winner. The full write-up is in
+      <a href="JUDGE.html">JUDGE.md</a>, and the resulting near-term
+      follow-up list is in <a href="FUTURE.html">FUTURE.md</a>.
+    </p>
+  </div>
+
+  <div class="step">
+    <h2><span class="num">10</span> Audited the total cost of the whole pipeline</h2>
+    <p>
+      Finally, the <code>11ai-llm-cost-project</code> skill added up the AI
+      usage cost for every step above, from the very first security scan
+      through the final judging pass. The full breakdown is in
+      <a href="LLM_COST.html">LLM_COST.md</a>.
+    </p>
+  </div>
+
+  <footer>rj11io/ACTIONS.html</footer>
+</main>
+</body>
+</html>
